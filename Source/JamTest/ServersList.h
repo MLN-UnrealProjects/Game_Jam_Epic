@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/PanelWidget.h"
-#include "ServerList.generated.h"
+#include "Blueprint/UserWidget.h"
+#include "ServersList.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class JAMTEST_API UServerList : public UPanelWidget
+class JAMTEST_API UServersList : public UUserWidget
 {
 	GENERATED_BODY()
 	

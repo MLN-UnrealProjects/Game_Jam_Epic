@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "JamController.h"
-#include "Runtime/UMG/Public/Blueprint/UserWidget.h "
+#include "Runtime/UMG/Public/Blueprint/UserWidget.h"
 
 void AJamController::SetupUI()
 {

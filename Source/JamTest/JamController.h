@@ -17,13 +17,13 @@ class JAMTEST_API AJamController : public APlayerController
 	
 public:
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "UI")
 	UUserWidget* GetHUDWidget() const { return HUDWidget; };
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "UI")
 	UUserWidget* GetInGameMenuWidget() const { return InGameMenuWidget; };
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "UI")
 	void HideInGameMenu();
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = "UI")
@@ -36,6 +36,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TAssetSubclassOf<UUserWidget> InGameMenuWidgetClass;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "UI")
 	void SetupUI();
 };

@@ -93,7 +93,7 @@ public:
 	void SetNetworkMode(bool LanModeActive);
 private:
 	UFUNCTION()
-	void ShowWidget(EGameStatus InState, UUserWidget* ToInitialize, TSubclassOf<UUserWidget>& Class);
+	UUserWidget* ShowWidget(EGameStatus InState, UUserWidget* ToInitialize, TSubclassOf<UUserWidget>& Class);
 
 	UPROPERTY()
 	FText LastErrorMsg;

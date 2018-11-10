@@ -10,7 +10,6 @@ bool UJamGameInstance::TryChangeStatus(EGameStatus InGameStatus)
 	{
 		return false;
 	}
-
 	switch (GameStatus)
 	{
 	case EGameStatus::Playing:
@@ -19,7 +18,7 @@ bool UJamGameInstance::TryChangeStatus(EGameStatus InGameStatus)
 	case EGameStatus::Menu:
 		if (MainMenuWidget)
 		{
-			MainMenuWidget->SetVisibility(ESlateVisibility::Hidden);
+			MainMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
 		}
 		break;
 	case EGameStatus::Startup:
@@ -27,19 +26,19 @@ bool UJamGameInstance::TryChangeStatus(EGameStatus InGameStatus)
 	case EGameStatus::ServerList:
 		if (ServerListWidget)
 		{
-			ServerListWidget->SetVisibility(ESlateVisibility::Hidden);
+			ServerListWidget->SetVisibility(ESlateVisibility::Collapsed);
 		}
 		break;
 	case EGameStatus::LoadingScreen:
 		if (LoadingWidget)
 		{
-			LoadingWidget->SetVisibility(ESlateVisibility::Hidden);
+			LoadingWidget->SetVisibility(ESlateVisibility::Collapsed);
 		}
 		break;
 	case EGameStatus::ErrorDialog:
 		if (ErrorDialogWidget)
 		{
-			ErrorDialogWidget->SetVisibility(ESlateVisibility::Hidden);
+			ErrorDialogWidget->SetVisibility(ESlateVisibility::Collapsed);
 		}
 		break;
 	case EGameStatus::Unknown:
@@ -78,23 +77,23 @@ void UJamGameInstance::ShowAndOpenMainMenu()
 	{
 		UGameplayStatics::OpenLevel(this, MainMenuName);
 	}
-	ShowWidget(EGameStatus::Menu, MainMenuWidget, MainMenuWidgetClass);
+	MainMenuWidget = ShowWidget(EGameStatus::Menu, MainMenuWidget, MainMenuWidgetClass);
 }
 
 void UJamGameInstance::ShowLoadingScreen()
 {
-	ShowWidget(EGameStatus::LoadingScreen, LoadingWidget, LoadingWidgetClass);
+	LoadingWidget = ShowWidget(EGameStatus::LoadingScreen, LoadingWidget, LoadingWidgetClass);
 }
 
 void UJamGameInstance::ShowServerList()
 {
-	ShowWidget(EGameStatus::ServerList, ServerListWidget, ServerListWidgetClass);
+	ServerListWidget = ShowWidget(EGameStatus::ServerList, ServerListWidget, ServerListWidgetClass);
 }
 void UJamGameInstance::ShowErrorDialog(FText ErrorMsg)
 {
 	EGameStatus PrevStatus{ GameStatus };
 
-	ShowWidget(EGameStatus::ErrorDialog, ErrorDialogWidget, ErrorDialogWidgetClass);
+	ErrorDialogWidget = ShowWidget(EGameStatus::ErrorDialog, ErrorDialogWidget, ErrorDialogWidgetClass);
 
 	if (PrevStatus != EGameStatus::ErrorDialog)
 	{
@@ -110,7 +109,7 @@ void UJamGameInstance::SetNetworkMode(bool LanModeActive)
 		NetworkModeChanged();
 	}
 }
-void UJamGameInstance::ShowWidget(EGameStatus InState, UUserWidget * ToInitialize, TSubclassOf<UUserWidget>& Class)
+UUserWidget* UJamGameInstance::ShowWidget(EGameStatus InState, UUserWidget* ToInitialize, TSubclassOf<UUserWidget>& Class)
 {
 	if (TryChangeStatus(InState))
 	{
@@ -126,7 +125,11 @@ void UJamGameInstance::ShowWidget(EGameStatus InState, UUserWidget * ToInitializ
 
 		if (ToInitialize)
 		{
-			ToInitialize->AddToViewport();
+			ToInitialize->SetVisibility(ESlateVisibility::Visible);
+			if (!ToInitialize->IsInViewport())
+			{
+				ToInitialize->AddToViewport();
+			}
 		}
 
 		if (PC)
@@ -138,5 +141,8 @@ void UJamGameInstance::ShowWidget(EGameStatus InState, UUserWidget * ToInitializ
 			PC->SetInputMode(Mode);
 			PC->bShowMouseCursor = true;
 		}
+
+		return ToInitialize;
 	}
+	return ToInitialize;
 }

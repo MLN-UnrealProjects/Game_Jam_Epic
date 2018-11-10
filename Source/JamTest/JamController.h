@@ -24,7 +24,13 @@ public:
 	UUserWidget* GetInGameMenuWidget() const { return InGameMenuWidget; };
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
+	void ShowInGameMenu();
+	UFUNCTION(BlueprintCallable, Category = "UI")
 	void HideInGameMenu();
+	UFUNCTION(BlueprintCallable,BlueprintPure, Category = "UI")
+	bool IsUIInitialized() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "UI")
+	bool IsInGameMenuCollapsed() const;
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = "UI")
 	UUserWidget* HUDWidget = nullptr;

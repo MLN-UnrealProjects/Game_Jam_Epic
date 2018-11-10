@@ -15,6 +15,7 @@ enum class EGameStatus : uint8
 	ServerList UMETA(DisplayName = "Server List"),
 	LoadingScreen UMETA(DisplayName = "Loading Screen"),
 	ErrorDialog UMETA(DisplayName = "Error Dialog"),
+	Lobby UMETA(DisplayName = "Lobby"),
 	Unknown UMETA(DisplayName = "Unknown")
 };
 
@@ -60,7 +61,7 @@ protected:
 	bool bEnableLAN = true;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Setup")
-	int32 MaxConnections = 4;
+	int32 MaxConnections = 2;
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> LoadingWidgetClass;
@@ -74,7 +75,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category  = "Setup")
 	void BeginPlayShowMenu();
 	UFUNCTION(BlueprintCallable, Category = "Game")
-	void StartPlayingstate();
+	void StartPlayingState();
+	UFUNCTION(BlueprintCallable, Category = "Game")
+	void StartLobbyState();
 	UFUNCTION(BlueprintCallable, Category = "Game")
 	void CreateNetSession();
 	UFUNCTION(BlueprintCallable, Category = "UI")
@@ -91,6 +94,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Game")
 	void SetNetworkMode(bool LanModeActive);
+
+	UFUNCTION(BlueprintCallable,Category = "Game")
+	int32 GetMaxConnections() const { return MaxConnections; };
 private:
 	UFUNCTION()
 	UUserWidget* ShowWidget(EGameStatus InState, UUserWidget* ToInitialize, TSubclassOf<UUserWidget>& Class);

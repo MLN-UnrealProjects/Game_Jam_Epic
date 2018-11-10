@@ -18,10 +18,10 @@ class JAMTEST_API AJamController : public APlayerController
 public:
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
-	UUserWidget* GetHUDWidget() const { return HUDWidget; };
+	UUserWidget* GetLobbyHUDWidget() const { return LobbyHUDWidget; };
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
-	UUserWidget* GetInGameMenuWidget() const { return InGameMenuWidget; };
+	UUserWidget* GetInLobbyMenuWidget() const { return InLobbyMenuWidget; };
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void ShowInGameMenu();
@@ -31,17 +31,16 @@ public:
 	bool IsUIInitialized() const;
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "UI")
 	bool IsInGameMenuCollapsed() const;
+	UFUNCTION()
+	void SetupLobbyUI();
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = "UI")
-	UUserWidget* HUDWidget = nullptr;
+	UUserWidget* LobbyHUDWidget = nullptr;
 	UPROPERTY(BlueprintReadOnly, Category = "UI")
-	UUserWidget* InGameMenuWidget = nullptr;
+	UUserWidget* InLobbyMenuWidget = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TSubclassOf<UUserWidget> HUDWidgetClass;
+	TSubclassOf<UUserWidget> LobbyHUDWidgetClass;
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TSubclassOf<UUserWidget> InGameMenuWidgetClass;
-
-	UFUNCTION(BlueprintCallable, Category = "UI")
-	void SetupUI();
+	TSubclassOf<UUserWidget> InLobbyMenuWidgetClass;
 };

@@ -3,23 +3,26 @@
 #include "JamController.h"
 #include "Runtime/UMG/Public/Blueprint/UserWidget.h"
 
-void AJamController::SetupUI()
+//TODO: Solve bug that does not setup ui for pcs
+
+
+void AJamController::SetupLobbyUI()
 {
-	if (IsLocalPlayerController())
+	if (IsLocalPlayerController()) 
 	{
-		if (HUDWidgetClass && InGameMenuWidgetClass)
+		if (LobbyHUDWidgetClass && InLobbyMenuWidgetClass)
 		{
-			HUDWidget = UUserWidget::CreateWidgetOfClass(HUDWidgetClass.Get(), GetGameInstance(), GetWorld(), this); // Create Widget
-			if (HUDWidget)
+			LobbyHUDWidget = UUserWidget::CreateWidgetOfClass(LobbyHUDWidgetClass.Get(), GetGameInstance(), GetWorld(), this); // Create Widget
+			if (LobbyHUDWidget)
 			{
-				HUDWidget->AddToViewport(); // Add it to the viewport so the Construct() method in the UUserWidget:: is run.
-				HUDWidget->SetVisibility(ESlateVisibility::Visible);
+				LobbyHUDWidget->AddToViewport(); // Add it to the viewport so the Construct() method in the UUserWidget:: is run.
+				LobbyHUDWidget->SetVisibility(ESlateVisibility::Visible);
 			}
-			InGameMenuWidget = UUserWidget::CreateWidgetOfClass(InGameMenuWidgetClass.Get(), GetGameInstance(), GetWorld(), this); // Create Widget
-			if (InGameMenuWidget)
+			InLobbyMenuWidget = UUserWidget::CreateWidgetOfClass(InLobbyMenuWidgetClass.Get(), GetGameInstance(), GetWorld(), this); // Create Widget
+			if (InLobbyMenuWidget)
 			{
-				InGameMenuWidget->AddToViewport(); // Add it to the viewport so the Construct() method in the UUserWidget:: is run.
-				InGameMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
+				InLobbyMenuWidget->AddToViewport(); // Add it to the viewport so the Construct() method in the UUserWidget:: is run.
+				InLobbyMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
 			}
 		}
 	}
@@ -27,12 +30,12 @@ void AJamController::SetupUI()
 
 void AJamController::ShowInGameMenu()
 {
-	if (InGameMenuWidget)
+	if (InLobbyMenuWidget)
 	{
-		if (HUDWidget)
+		if (LobbyHUDWidget)
 		{
-			InGameMenuWidget->SetVisibility(ESlateVisibility::Visible);
-			HUDWidget->SetVisibility(ESlateVisibility::Collapsed);
+			InLobbyMenuWidget->SetVisibility(ESlateVisibility::Visible);
+			LobbyHUDWidget->SetVisibility(ESlateVisibility::Collapsed);
 
 			FInputModeUIOnly Mode;
 			Mode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
@@ -44,12 +47,12 @@ void AJamController::ShowInGameMenu()
 }
 void AJamController::HideInGameMenu()
 {
-	if (InGameMenuWidget)
+	if (InLobbyMenuWidget)
 	{
-		if (HUDWidget)
+		if (LobbyHUDWidget)
 		{
-			InGameMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
-			HUDWidget->SetVisibility(ESlateVisibility::Visible);
+			InLobbyMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
+			LobbyHUDWidget->SetVisibility(ESlateVisibility::Visible);
 
 			SetInputMode(FInputModeGameOnly{});
 
@@ -60,10 +63,10 @@ void AJamController::HideInGameMenu()
 
 bool AJamController::IsUIInitialized() const
 {
-	return HUDWidget != nullptr && InGameMenuWidget != nullptr;
+	return LobbyHUDWidget != nullptr && InLobbyMenuWidget != nullptr;
 }
 
 bool AJamController::IsInGameMenuCollapsed() const
 {
-	return IsUIInitialized() && InGameMenuWidget->GetVisibility() == ESlateVisibility::Collapsed;
+	return IsUIInitialized() && InLobbyMenuWidget->GetVisibility() == ESlateVisibility::Collapsed;
 }

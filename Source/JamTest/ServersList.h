@@ -13,8 +13,5 @@ UCLASS()
 class JAMTEST_API UServersList : public UUserWidget
 {
 	GENERATED_BODY()
-	
-	
-	
-	
+
 };

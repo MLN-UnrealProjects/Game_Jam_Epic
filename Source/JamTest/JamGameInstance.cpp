@@ -15,6 +15,12 @@ bool UJamGameInstance::TryChangeStatus(EGameStatus InGameStatus)
 	case EGameStatus::Playing:
 		DestroySession();
 		break;
+	case EGameStatus::Lobby:
+		if (InGameStatus != EGameStatus::Playing)
+		{
+			DestroySession();
+		}
+		break;
 	case EGameStatus::Menu:
 		if (MainMenuWidget)
 		{
@@ -60,11 +66,14 @@ void UJamGameInstance::BeginPlayShowMenu()
 	}
 }
 
-void UJamGameInstance::StartPlayingstate()
+void UJamGameInstance::StartPlayingState()
 {
 	TryChangeStatus(EGameStatus::Playing);
 }
-
+void UJamGameInstance::StartLobbyState()
+{
+	TryChangeStatus(EGameStatus::Lobby);
+}
 void UJamGameInstance::CreateNetSession()
 {
 	ShowLoadingScreen();
@@ -73,7 +82,7 @@ void UJamGameInstance::CreateNetSession()
 
 void UJamGameInstance::ShowAndOpenMainMenu()
 {
-	if (GameStatus == EGameStatus::Playing)
+	if (GameStatus == EGameStatus::Playing || GameStatus == EGameStatus::Lobby)
 	{
 		UGameplayStatics::OpenLevel(this, MainMenuName);
 	}

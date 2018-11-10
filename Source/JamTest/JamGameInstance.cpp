@@ -99,7 +99,7 @@ void UJamGameInstance::ShowServerList()
 }
 void UJamGameInstance::ShowErrorDialog(FText ErrorMsg)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Errod Dialog: %s"), *ErrorMsg.ToString());
+	UE_LOG(LogTemp, Warning, TEXT("Error Dialog: %s"), *ErrorMsg.ToString());
 
 	EGameStatus PrevStatus{ GameStatus };
 
@@ -110,21 +110,18 @@ void UJamGameInstance::ShowErrorDialog(FText ErrorMsg)
 		DestroySession();
 	}
 }
-void UJamGameInstance::ShowWidget(EGameStatus InState, UUserWidget * ToInitialize, TAssetSubclassOf<UUserWidget> Class)
+void UJamGameInstance::ShowWidget(EGameStatus InState, UUserWidget * ToInitialize, TSubclassOf<UUserWidget>& Class)
 {
 	if (TryChangeStatus(InState))
 	{
-		APlayerController* PC{ GetFirstLocalPlayerController() };
-		if (!ensure(PC) || !ensure(GetWorld()) || !ensure(GetWorld()->GetAuthGameMode()))
-		{
-			return;
-		}
+		APlayerController* PC{ UGameplayStatics::GetPlayerController(GetWorld(), 0) };
+
 		if (!ToInitialize)
 		{
-			UGameInstance* GI{ (GetWorld()->GetAuthGameMode()->GetGameInstance()) };
-			if (ensure(Class) && ensure(GI != NULL))
+			if (Class.Get() && PC)
 			{
-				ToInitialize = UUserWidget::CreateWidgetOfClass(Class.Get(), GI, GetWorld(), PC); // Create Widget
+				ToInitialize = UUserWidget::CreateWidgetOfClass(Class.Get(), this, GetWorld(), PC); // Create Widget
+				UE_LOG(LogTemp, Warning, TEXT("Widget created"));
 			}
 		}
 
@@ -132,10 +129,14 @@ void UJamGameInstance::ShowWidget(EGameStatus InState, UUserWidget * ToInitializ
 		{
 			ToInitialize->AddToViewport();
 		}
-		FInputModeUIOnly Mode{};
-		//TODO: set focus to loading widget
-		//Mode.SetWidgetToFocus(MakeShareable(LoadingWidget)); 
-		Mode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-		PC->SetInputMode(Mode);
+
+		if (PC)
+		{
+			FInputModeUIOnly Mode{};
+			//TODO: set focus to given widget
+			//Mode.SetWidgetToFocus(MakeShareable(LoadingWidget)); 
+			Mode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+			PC->SetInputMode(Mode);
+		}
 	}
 }

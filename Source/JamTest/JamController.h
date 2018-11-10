@@ -32,9 +32,9 @@ protected:
 	UUserWidget* InGameMenuWidget = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TAssetSubclassOf<UUserWidget> HUDWidgetClass;
+	TSubclassOf<UUserWidget> HUDWidgetClass;
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TAssetSubclassOf<UUserWidget> InGameMenuWidgetClass;
+	TSubclassOf<UUserWidget> InGameMenuWidgetClass;
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void SetupUI();

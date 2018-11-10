@@ -61,13 +61,13 @@ protected:
 	int32 MaxConnections = 4;
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TAssetSubclassOf<UUserWidget> LoadingWidgetClass;
+	TSubclassOf<UUserWidget> LoadingWidgetClass;
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TAssetSubclassOf<UUserWidget> MainMenuWidgetClass;
+	TSubclassOf<UUserWidget> MainMenuWidgetClass;
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TAssetSubclassOf<UUserWidget> ErrorDialogWidgetClass;
+	TSubclassOf<UUserWidget> ErrorDialogWidgetClass;
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TAssetSubclassOf<UUserWidget> ServerListWidgetClass;
+	TSubclassOf<UUserWidget> ServerListWidgetClass;
 public:
 	UFUNCTION(BlueprintCallable, Category  = "Setup")
 	void BeginPlayShowMenu();
@@ -84,5 +84,5 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void ShowErrorDialog(FText ErrorMsg);
 private:
-	void ShowWidget(EGameStatus InState, UUserWidget* ToInitialize, TAssetSubclassOf<UUserWidget> Class);
+	void ShowWidget(EGameStatus InState, UUserWidget* ToInitialize, TSubclassOf<UUserWidget>& Class);
 };

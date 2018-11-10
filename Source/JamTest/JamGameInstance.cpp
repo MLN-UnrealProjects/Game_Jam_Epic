@@ -4,7 +4,6 @@
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Runtime/UMG/Public/Blueprint/UserWidget.h"
 #include "Runtime/Engine/Classes/GameFramework/GameModeBase.h"
-
 bool UJamGameInstance::TryChangeStatus(EGameStatus InGameStatus)
 {
 	if (GameStatus == InGameStatus)
@@ -44,10 +43,8 @@ bool UJamGameInstance::TryChangeStatus(EGameStatus InGameStatus)
 		}
 		break;
 	case EGameStatus::Unknown:
-		UE_LOG(LogTemp, Warning, TEXT("Current state is unknown"));
 		break;
 	default:
-		UE_LOG(LogTemp, Warning, TEXT("Current state is unknown"));
 		break;
 	}
 
@@ -61,10 +58,6 @@ void UJamGameInstance::BeginPlayShowMenu()
 	if (GameStatus == EGameStatus::Startup)
 	{
 		ShowAndOpenMainMenu();
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Current state is not startup"));
 	}
 }
 
@@ -99,15 +92,22 @@ void UJamGameInstance::ShowServerList()
 }
 void UJamGameInstance::ShowErrorDialog(FText ErrorMsg)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Error Dialog: %s"), *ErrorMsg.ToString());
-
 	EGameStatus PrevStatus{ GameStatus };
 
 	ShowWidget(EGameStatus::ErrorDialog, ErrorDialogWidget, ErrorDialogWidgetClass);
 
 	if (PrevStatus != EGameStatus::ErrorDialog)
 	{
+		LastErrorMsg = ErrorMsg;
 		DestroySession();
+	}
+}
+void UJamGameInstance::SetNetworkMode(bool LanModeActive)
+{
+	if (LanModeActive != bEnableLAN)
+	{
+		bEnableLAN = LanModeActive;
+		NetworkModeChanged();
 	}
 }
 void UJamGameInstance::ShowWidget(EGameStatus InState, UUserWidget * ToInitialize, TSubclassOf<UUserWidget>& Class)
@@ -121,7 +121,6 @@ void UJamGameInstance::ShowWidget(EGameStatus InState, UUserWidget * ToInitializ
 			if (Class.Get() && PC)
 			{
 				ToInitialize = UUserWidget::CreateWidgetOfClass(Class.Get(), this, GetWorld(), PC); // Create Widget
-				UE_LOG(LogTemp, Warning, TEXT("Widget created"));
 			}
 		}
 
@@ -137,6 +136,7 @@ void UJamGameInstance::ShowWidget(EGameStatus InState, UUserWidget * ToInitializ
 			//Mode.SetWidgetToFocus(MakeShareable(LoadingWidget)); 
 			Mode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 			PC->SetInputMode(Mode);
+			PC->bShowMouseCursor = true;
 		}
 	}
 }

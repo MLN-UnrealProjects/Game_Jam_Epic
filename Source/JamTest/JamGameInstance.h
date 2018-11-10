@@ -44,6 +44,8 @@ protected:
 	void DestroySession();
 	UFUNCTION(BlueprintImplementableEvent) //esposto come evento in bp. Alternativa che permette di implementare roba anche in c++: BlueprintNativeEvent
 	void CreateSession();
+	UFUNCTION(BlueprintImplementableEvent) //esposto come evento in bp. Alternativa che permette di implementare roba anche in c++: BlueprintNativeEvent
+	void NetworkModeChanged();
 
 	UPROPERTY()
 	UUserWidget* MainMenuWidget;
@@ -83,6 +85,16 @@ public:
 	void ShowServerList();
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void ShowErrorDialog(FText ErrorMsg);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Game")
+	FText& GetLastErrorMsg() { return LastErrorMsg; };
+
+	UFUNCTION(BlueprintCallable, Category = "Game")
+	void SetNetworkMode(bool LanModeActive);
 private:
+	UFUNCTION()
 	void ShowWidget(EGameStatus InState, UUserWidget* ToInitialize, TSubclassOf<UUserWidget>& Class);
+
+	UPROPERTY()
+	FText LastErrorMsg;
 };

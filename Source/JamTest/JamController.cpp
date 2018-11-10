@@ -26,4 +26,5 @@ void AJamController::HideInGameMenu()
 		InGameMenuWidget->RemoveFromParent();
 	}
 	SetInputMode(FInputModeGameOnly{});
+	bShowMouseCursor = false;
 }

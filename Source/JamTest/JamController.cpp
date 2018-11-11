@@ -3,8 +3,6 @@
 #include "JamController.h"
 #include "Runtime/UMG/Public/Blueprint/UserWidget.h"
 
-//TODO: Solve bug that does not setup ui for pcs
-
 
 void AJamController::SetupLobbyUI()
 {
@@ -28,7 +26,7 @@ void AJamController::SetupLobbyUI()
 	}
 }
 
-void AJamController::ShowInGameMenu()
+void AJamController::ShowInLobbyMenu()
 {
 	if (InLobbyMenuWidget)
 	{
@@ -45,7 +43,7 @@ void AJamController::ShowInGameMenu()
 		}
 	}
 }
-void AJamController::HideInGameMenu()
+void AJamController::HideInLobbyMenu()
 {
 	if (InLobbyMenuWidget)
 	{
@@ -54,19 +52,21 @@ void AJamController::HideInGameMenu()
 			InLobbyMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
 			LobbyHUDWidget->SetVisibility(ESlateVisibility::Visible);
 
-			SetInputMode(FInputModeGameOnly{});
+			FInputModeUIOnly Mode;
+			Mode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 
-			bShowMouseCursor = false;
+			SetInputMode(Mode);
+			bShowMouseCursor = true;
 		}
 	}
 }
 
-bool AJamController::IsUIInitialized() const
+bool AJamController::IsLobbyUIInitialized() const
 {
 	return LobbyHUDWidget != nullptr && InLobbyMenuWidget != nullptr;
 }
 
-bool AJamController::IsInGameMenuCollapsed() const
+bool AJamController::IsInLobbyMenuCollapsed() const
 {
-	return IsUIInitialized() && InLobbyMenuWidget->GetVisibility() == ESlateVisibility::Collapsed;
+	return IsLobbyUIInitialized() && InLobbyMenuWidget->GetVisibility() == ESlateVisibility::Collapsed;
 }

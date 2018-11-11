@@ -24,13 +24,13 @@ public:
 	UUserWidget* GetInLobbyMenuWidget() const { return InLobbyMenuWidget; };
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
-	void ShowInGameMenu();
+	void ShowInLobbyMenu();
 	UFUNCTION(BlueprintCallable, Category = "UI")
-	void HideInGameMenu();
+	void HideInLobbyMenu();
 	UFUNCTION(BlueprintCallable,BlueprintPure, Category = "UI")
-	bool IsUIInitialized() const;
+	bool IsLobbyUIInitialized() const;
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "UI")
-	bool IsInGameMenuCollapsed() const;
+	bool IsInLobbyMenuCollapsed() const;
 	UFUNCTION(BlueprintCallable, Category = "Setup")
 	void SetupLobbyUI();
 protected:

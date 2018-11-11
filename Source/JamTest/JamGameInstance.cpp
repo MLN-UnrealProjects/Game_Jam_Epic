@@ -75,6 +75,14 @@ void UJamGameInstance::StartLobbyState()
 	{
 		ServerListWidget->RemoveFromViewport();
 	}
+	if (ErrorDialogWidget)
+	{
+		ErrorDialogWidget->RemoveFromViewport();
+	}
+	if (LoadingWidget)
+	{
+		LoadingWidget->RemoveFromViewport();
+	}
 }
 void UJamGameInstance::CreateNetSession()
 {

@@ -32,7 +32,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category = "Game")
 	EGameStatus GameStatus = EGameStatus::Startup;
 
-	UPROPERTY(EditDefaultsOnly,Category = "Setup")
+	UPROPERTY(EditDefaultsOnly,Category = "Levels")
 	FName MainMenuName = "MainMenu";
 
 	/**

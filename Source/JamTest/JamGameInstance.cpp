@@ -4,6 +4,7 @@
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Runtime/UMG/Public/Blueprint/UserWidget.h"
 #include "Runtime/Engine/Classes/GameFramework/GameModeBase.h"
+#include "JamController.h"
 bool UJamGameInstance::TryChangeStatus(EGameStatus InGameStatus)
 {
 	if (GameStatus == InGameStatus)
@@ -58,14 +59,6 @@ bool UJamGameInstance::TryChangeStatus(EGameStatus InGameStatus)
 	return true;
 }
 
-void UJamGameInstance::BeginPlayShowMenu()
-{
-	if (GameStatus == EGameStatus::Startup)
-	{
-		ShowAndOpenMainMenu();
-	}
-}
-
 void UJamGameInstance::StartPlayingState()
 {
 	TryChangeStatus(EGameStatus::Playing);
@@ -73,6 +66,15 @@ void UJamGameInstance::StartPlayingState()
 void UJamGameInstance::StartLobbyState()
 {
 	TryChangeStatus(EGameStatus::Lobby);
+	Cast<AJamController>(UGameplayStatics::GetPlayerController(GetWorld(), 0))->SetupLobbyUI();
+	if (MainMenuWidget)
+	{
+		MainMenuWidget->RemoveFromViewport();
+	}
+	if (ServerListWidget)
+	{
+		ServerListWidget->RemoveFromViewport();
+	}
 }
 void UJamGameInstance::CreateNetSession()
 {
@@ -80,9 +82,9 @@ void UJamGameInstance::CreateNetSession()
 	CreateSession();
 }
 
-void UJamGameInstance::ShowAndOpenMainMenu()
+void UJamGameInstance::ShowAndOpenMainMenu(bool OpenLevel)
 {
-	if (GameStatus == EGameStatus::Playing || GameStatus == EGameStatus::Lobby)
+	if (OpenLevel && GameStatus == EGameStatus::Playing || GameStatus == EGameStatus::Lobby)
 	{
 		UGameplayStatics::OpenLevel(this, MainMenuName);
 	}
@@ -118,9 +120,9 @@ void UJamGameInstance::SetNetworkMode(bool LanModeActive)
 		NetworkModeChanged();
 	}
 }
-UUserWidget* UJamGameInstance::ShowWidget(EGameStatus InState, UUserWidget* ToInitialize, TSubclassOf<UUserWidget>& Class)
+UUserWidget* UJamGameInstance::ShowWidget(EGameStatus InState, UUserWidget* ToInitialize, TSubclassOf<UUserWidget>& Class, bool bForceExec)
 {
-	if (TryChangeStatus(InState))
+	if (TryChangeStatus(InState) || bForceExec)
 	{
 		APlayerController* PC{ UGameplayStatics::GetPlayerController(GetWorld(), 0) };
 

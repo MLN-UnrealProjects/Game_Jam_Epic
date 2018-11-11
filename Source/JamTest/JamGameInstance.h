@@ -72,8 +72,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> ServerListWidgetClass;
 public:
-	UFUNCTION(BlueprintCallable, Category  = "Setup")
-	void BeginPlayShowMenu();
 	UFUNCTION(BlueprintCallable, Category = "Game")
 	void StartPlayingState();
 	UFUNCTION(BlueprintCallable, Category = "Game")
@@ -81,7 +79,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Game")
 	void CreateNetSession();
 	UFUNCTION(BlueprintCallable, Category = "UI")
-	void ShowAndOpenMainMenu();
+	void ShowAndOpenMainMenu(bool OpenLevel = true);
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void ShowLoadingScreen();
 	UFUNCTION(BlueprintCallable, Category = "UI")
@@ -99,7 +97,7 @@ public:
 	int32 GetMaxConnections() const { return MaxConnections; };
 private:
 	UFUNCTION()
-	UUserWidget* ShowWidget(EGameStatus InState, UUserWidget* ToInitialize, TSubclassOf<UUserWidget>& Class);
+	UUserWidget* ShowWidget(EGameStatus InState, UUserWidget* ToInitialize, TSubclassOf<UUserWidget>& Class, bool bForceExec = true);
 
 	UPROPERTY()
 	FText LastErrorMsg;

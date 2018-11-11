@@ -31,7 +31,7 @@ public:
 	bool IsUIInitialized() const;
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "UI")
 	bool IsInGameMenuCollapsed() const;
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable, Category = "Setup")
 	void SetupLobbyUI();
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = "UI")

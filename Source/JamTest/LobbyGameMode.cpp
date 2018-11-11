@@ -18,12 +18,12 @@ void ALobbyGameMode::OnLogin(AGameModeBase* GameMode, APlayerController* PC)
 	}
 
 	CurrentlyConnectedPlayers = GameState->PlayerArray.Num();
-	AJamController* JamPC{ Cast<AJamController>(PC) };
+	//AJamController* JamPC{ Cast<AJamController>(PC) };
 
-	if (JamPC)
-	{
-		JamPC->SetupLobbyUI();
-	}
+	//if (JamPC)
+	//{
+	//	JamPC->SetupLobbyUI();
+	//}
 	UJamGameInstance* GI{ Cast<UJamGameInstance>(GetGameInstance()) };
 	if (GI)
 	{

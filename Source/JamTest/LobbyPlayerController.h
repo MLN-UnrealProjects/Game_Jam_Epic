@@ -4,43 +4,46 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
-#include "JamController.generated.h"
+#include "LobbyPlayerController.generated.h"
 
 class UUserWidget;
+
 /**
  * 
  */
 UCLASS()
-class JAMTEST_API AJamController : public APlayerController
+class JAMTEST_API ALobbyPlayerController : public APlayerController
 {
 	GENERATED_BODY()
+	
 	
 public:
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
-	UUserWidget* GetLobbyHUDWidget() const { return LobbyHUDWidget; };
+		UUserWidget* GetLobbyHUDWidget() const { return LobbyHUDWidget; };
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
-	UUserWidget* GetInLobbyMenuWidget() const { return InLobbyMenuWidget; };
+		UUserWidget* GetInLobbyMenuWidget() const { return InLobbyMenuWidget; };
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
-	void ShowInLobbyMenu();
+		void ShowInLobbyMenu();
 	UFUNCTION(BlueprintCallable, Category = "UI")
-	void HideInLobbyMenu();
-	UFUNCTION(BlueprintCallable,BlueprintPure, Category = "UI")
-	bool IsLobbyUIInitialized() const;
+		void HideInLobbyMenu();
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "UI")
-	bool IsInLobbyMenuCollapsed() const;
+		bool IsLobbyUIInitialized() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "UI")
+		bool IsInLobbyMenuCollapsed() const;
 	UFUNCTION(BlueprintCallable, Category = "Setup")
-	void SetupLobbyUI();
+		void SetupLobbyUI();
 protected:
 	UPROPERTY(BlueprintReadOnly, Category = "UI")
-	UUserWidget* LobbyHUDWidget = nullptr;
+		UUserWidget* LobbyHUDWidget = nullptr;
 	UPROPERTY(BlueprintReadOnly, Category = "UI")
-	UUserWidget* InLobbyMenuWidget = nullptr;
+		UUserWidget* InLobbyMenuWidget = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TSubclassOf<UUserWidget> LobbyHUDWidgetClass;
+		TSubclassOf<UUserWidget> LobbyHUDWidgetClass;
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TSubclassOf<UUserWidget> InLobbyMenuWidgetClass;
+		TSubclassOf<UUserWidget> InLobbyMenuWidgetClass;
+	
 };

@@ -4,7 +4,9 @@
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "Runtime/UMG/Public/Blueprint/UserWidget.h"
 #include "Runtime/Engine/Classes/GameFramework/GameModeBase.h"
-#include "JamController.h"
+#include "LobbyPlayerController.h"
+#include "Runtime/Engine/Public/TimerManager.h"
+
 bool UJamGameInstance::TryChangeStatus(EGameStatus InGameStatus)
 {
 	if (GameStatus == InGameStatus)
@@ -62,11 +64,28 @@ bool UJamGameInstance::TryChangeStatus(EGameStatus InGameStatus)
 void UJamGameInstance::StartPlayingState()
 {
 	TryChangeStatus(EGameStatus::Playing);
+
+	if (MainMenuWidget)
+	{
+		MainMenuWidget->RemoveFromViewport();
+	}
+	if (ServerListWidget)
+	{
+		ServerListWidget->RemoveFromViewport();
+	}
+	if (ErrorDialogWidget)
+	{
+		ErrorDialogWidget->RemoveFromViewport();
+	}
+	if (LoadingWidget)
+	{
+		LoadingWidget->RemoveFromViewport();
+	}
 }
 void UJamGameInstance::StartLobbyState()
 {
 	TryChangeStatus(EGameStatus::Lobby);
-	Cast<AJamController>(UGameplayStatics::GetPlayerController(GetWorld(), 0))->SetupLobbyUI();
+	Cast<ALobbyPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0))->SetupLobbyUI();
 	if (MainMenuWidget)
 	{
 		MainMenuWidget->RemoveFromViewport();
@@ -108,8 +127,12 @@ void UJamGameInstance::ShowServerList()
 {
 	ServerListWidget = ShowWidget(EGameStatus::ServerList, ServerListWidget, ServerListWidgetClass);
 }
-void UJamGameInstance::ShowErrorDialog(FText ErrorMsg)
+void UJamGameInstance::ShowErrorDialog(FText ErrorMsg, bool bDestroySession , float ShowTime)
 {
+	if (ShowTime < MinErrorShowTime)
+	{
+		ShowTime = MinErrorShowTime;
+	}
 	EGameStatus PrevStatus{ GameStatus };
 
 	ErrorDialogWidget = ShowWidget(EGameStatus::ErrorDialog, ErrorDialogWidget, ErrorDialogWidgetClass);
@@ -117,7 +140,15 @@ void UJamGameInstance::ShowErrorDialog(FText ErrorMsg)
 	if (PrevStatus != EGameStatus::ErrorDialog)
 	{
 		LastErrorMsg = ErrorMsg;
-		DestroySession();
+		if (ErrorTimerHandle.IsValid())
+		{
+			GetTimerManager().ClearTimer(ErrorTimerHandle);
+		}
+		GetTimerManager().SetTimer(ErrorTimerHandle,this, &UJamGameInstance::CollapseErrorDialog, ShowTime,false);
+		if (bDestroySession)
+		{
+			DestroySession();
+		}
 	}
 }
 void UJamGameInstance::SetNetworkMode(bool LanModeActive)
@@ -164,4 +195,15 @@ UUserWidget* UJamGameInstance::ShowWidget(EGameStatus InState, UUserWidget* ToIn
 		return ToInitialize;
 	}
 	return ToInitialize;
+}
+
+void UJamGameInstance::CollapseErrorDialog()
+{
+	if (ErrorDialogWidget)
+	{
+		ErrorDialogWidget->SetVisibility(ESlateVisibility::Collapsed);
+	}
+	GetTimerManager().ClearTimer(ErrorTimerHandle);
+
+	ShowAndOpenMainMenu();
 }

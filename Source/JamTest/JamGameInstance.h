@@ -28,6 +28,7 @@ class JAMTEST_API UJamGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
 
+	const float MinErrorShowTime = 1.0f;
 protected:
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category = "Game")
 	EGameStatus GameStatus = EGameStatus::Startup;
@@ -71,6 +72,9 @@ protected:
 	TSubclassOf<UUserWidget> ErrorDialogWidgetClass;
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
 	TSubclassOf<UUserWidget> ServerListWidgetClass;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Network")
+	int32 MinConnectedPlayersforGame = 2;
 public:
 	UFUNCTION(BlueprintCallable, Category = "Game")
 	void StartPlayingState();
@@ -85,7 +89,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void ShowServerList();
 	UFUNCTION(BlueprintCallable, Category = "UI")
-	void ShowErrorDialog(FText ErrorMsg);
+	void ShowErrorDialog(FText ErrorMsg, bool bDestroySession = false, float ShowTime = 1.0f);
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Game")
 	FText& GetLastErrorMsg() { return LastErrorMsg; };
@@ -93,12 +97,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Game")
 	void SetNetworkMode(bool LanModeActive);
 
-	UFUNCTION(BlueprintCallable,Category = "Game")
+	UFUNCTION(BlueprintCallable, BlueprintPure,Category = "Game")
 	int32 GetMaxConnections() const { return MaxConnections; };
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Game")
+	int32 GetMinConnections() const { return MinConnectedPlayersforGame; };
 private:
 	UFUNCTION()
 	UUserWidget* ShowWidget(EGameStatus InState, UUserWidget* ToInitialize, TSubclassOf<UUserWidget>& Class, bool bForceExec = true);
-
+	UFUNCTION()
+	void CollapseErrorDialog();
 	UPROPERTY()
 	FText LastErrorMsg;
+
+	FTimerHandle ErrorTimerHandle;
 };

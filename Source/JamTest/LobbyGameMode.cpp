@@ -3,76 +3,105 @@
 #include "LobbyGameMode.h"
 #include "Engine/World.h"
 #include "Runtime/Engine/Classes/GameFramework/GameStateBase.h"
-#include "JamController.h"
 #include "JamGameInstance.h"
 #include "Runtime/Engine/Public/TimerManager.h"
+#include "JamPlayerState.h"
+#include "UnrealNetwork.h"
+ALobbyGameMode::ALobbyGameMode()
+{
+	bReplicates = true;
+	bUseSeamlessTravel = true;
+	PrimaryActorTick.bCanEverTick = true;
+}
 void ALobbyGameMode::StartGame()
 {
 	GetWorld()->ServerTravel(GameLevelURL);
 }
-void ALobbyGameMode::OnLogin(AGameModeBase* GameMode, APlayerController* PC)
+void ALobbyGameMode::Tick(float Deltatime)
 {
-	if (!HasAuthority())
+	LobbyStatus = ELobbyStatus::Unknown;
+
+	TArray<APlayerState*> Players{ GameState->PlayerArray };
+
+	CurrentlyConnectedPlayers = Players.Num();
+
+	UJamGameInstance* GI{ Cast<UJamGameInstance>(GetGameInstance()) };
+
+	if (!ensure(GI))
 	{
 		return;
 	}
 
-	CurrentlyConnectedPlayers = GameState->PlayerArray.Num();
-	//AJamController* JamPC{ Cast<AJamController>(PC) };
-
-	//if (JamPC)
-	//{
-	//	JamPC->SetupLobbyUI();
-	//}
-	UJamGameInstance* GI{ Cast<UJamGameInstance>(GetGameInstance()) };
-	if (GI)
+	LobbyStatus = ELobbyStatus::WaitingForMinPlayers;
+	if (GI->GetMinConnections() <= CurrentlyConnectedPlayers)
 	{
-		if (GI->GetMaxConnections() == CurrentlyConnectedPlayers && !bReadyPhase)
+		LobbyStatus = ELobbyStatus::WaitingForReadyChecks;
+	}
+
+	if (LobbyStatus == ELobbyStatus::WaitingForReadyChecks)
+	{
+		bool bAllPlayersReady{ true };
+		for (size_t i = 0; i < Players.Num(); i++)
 		{
-			StartCountDownToGame();
+			AJamPlayerState* PS{ Cast<AJamPlayerState>(Players[i]) };
+			if (PS)
+			{
+				if (!PS->GetReadyCheck())
+				{
+					bAllPlayersReady = false;
+					break;
+				}
+			}
+		}
+
+		if (bAllPlayersReady)
+		{
+			LobbyStatus = ELobbyStatus::GameAboutToStart;
 		}
 	}
-}
 
-void ALobbyGameMode::BeginPlay()
-{
-	FGameModeEvents::GameModePostLoginEvent.AddUFunction(this, FName{ "OnLogin" });
-	FGameModeEvents::GameModeLogoutEvent.AddUFunction(this, FName{ "OnLogout" });
-	bUseSeamlessTravel = true;
-	Super::BeginPlay();
-}
-
-void ALobbyGameMode::OnLogout(AGameModeBase * GameMode, AController * PC)
-{
-	if (!HasAuthority())
+	for (size_t i = 0; i < Players.Num(); i++)
 	{
-		return;
-	}
-
-	CurrentlyConnectedPlayers = GameState->PlayerArray.Num();
-
-	UJamGameInstance* GI{ Cast<UJamGameInstance>(GetGameInstance()) };
-	if (GI)
-	{
-		if (GI->GetMaxConnections() != CurrentlyConnectedPlayers && bReadyPhase)
+		AJamPlayerState* PS{ Cast<AJamPlayerState>(Players[i]) };
+		if (PS)
 		{
-			AbortCountDownToGame();
+			PS->SetLobbyStatus(LobbyStatus);
 		}
 	}
+
+	switch (LobbyStatus)
+	{
+	case ELobbyStatus::GameAboutToStart:
+		StartCountDownToGame(false);
+		break;
+	case ELobbyStatus::WaitingForMinPlayers:
+	case ELobbyStatus::WaitingForReadyChecks:
+	case ELobbyStatus::Unknown:
+	default:
+		AbortCountDownToGame();
+		break;
+	}
 }
 
-void ALobbyGameMode::StartCountDownToGame()
+void ALobbyGameMode::StartCountDownToGame(bool bResetTimer)
 {
 	if (TimerHandle.IsValid())
 	{
+		if (!bResetTimer)
+		{
+			return;
+		}
 		AbortCountDownToGame();
 	}
 	GetWorldTimerManager().SetTimer(TimerHandle, this, &ALobbyGameMode::StartGame, ReadyTimer, false);
-	bReadyPhase = true;
 }
 
 void ALobbyGameMode::AbortCountDownToGame()
 {
 	GetWorldTimerManager().ClearTimer(TimerHandle);
-	bReadyPhase = false;
+}
+
+void ALobbyGameMode::SetReadyStatus(AJamPlayerState * PS, bool bReadyStatus)
+{
+	PS->SetReadyCheck(bReadyStatus);
 }

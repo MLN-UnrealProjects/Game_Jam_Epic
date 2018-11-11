@@ -1,12 +1,15 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "JamController.h"
+#include "LobbyPlayerController.h"
+
+
+
 #include "Runtime/UMG/Public/Blueprint/UserWidget.h"
 
 
-void AJamController::SetupLobbyUI()
+void ALobbyPlayerController::SetupLobbyUI()
 {
-	if (IsLocalPlayerController()) 
+	if (IsLocalPlayerController())
 	{
 		if (LobbyHUDWidgetClass && InLobbyMenuWidgetClass)
 		{
@@ -26,7 +29,7 @@ void AJamController::SetupLobbyUI()
 	}
 }
 
-void AJamController::ShowInLobbyMenu()
+void ALobbyPlayerController::ShowInLobbyMenu()
 {
 	if (InLobbyMenuWidget)
 	{
@@ -43,7 +46,7 @@ void AJamController::ShowInLobbyMenu()
 		}
 	}
 }
-void AJamController::HideInLobbyMenu()
+void ALobbyPlayerController::HideInLobbyMenu()
 {
 	if (InLobbyMenuWidget)
 	{
@@ -61,12 +64,12 @@ void AJamController::HideInLobbyMenu()
 	}
 }
 
-bool AJamController::IsLobbyUIInitialized() const
+bool ALobbyPlayerController::IsLobbyUIInitialized() const
 {
 	return LobbyHUDWidget != nullptr && InLobbyMenuWidget != nullptr;
 }
 
-bool AJamController::IsInLobbyMenuCollapsed() const
+bool ALobbyPlayerController::IsInLobbyMenuCollapsed() const
 {
 	return IsLobbyUIInitialized() && InLobbyMenuWidget->GetVisibility() == ESlateVisibility::Collapsed;
 }

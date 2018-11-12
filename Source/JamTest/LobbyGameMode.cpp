@@ -16,15 +16,6 @@ ALobbyGameMode::ALobbyGameMode()
 }
 void ALobbyGameMode::StartGame()
 {
-	for (size_t i = 0; i < GameState->PlayerArray.Num(); i++)
-	{
-
-		auto PC = UGameplayStatics::GetPlayerController(GetWorld(), i);
-		if (PC)
-		{
-			EndLobbyEnterGame(PC);
-		}
-	}
 	GetWorld()->ServerTravel(GameLevelURL);
 }
 void ALobbyGameMode::Tick(float Deltatime)

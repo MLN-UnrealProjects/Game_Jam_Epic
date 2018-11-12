@@ -7,6 +7,7 @@
 #include "Runtime/Engine/Public/TimerManager.h"
 #include "JamPlayerState.h"
 #include "UnrealNetwork.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 ALobbyGameMode::ALobbyGameMode()
 {
 	bReplicates = true;

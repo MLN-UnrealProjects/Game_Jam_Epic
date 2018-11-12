@@ -3,7 +3,7 @@
 #include "JamMovementComponent.h"
 #include "Runtime/Engine/Classes/GameFramework/Pawn.h"
 #include "Runtime/Engine/Classes/GameFramework/Character.h"
-//TODO: implement teleport and (if i have time)dash logic
+//TODO: teleport and dash cooldown not implemented
 
 FNetworkPredictionData_Client* UJamMovementComponent::GetPredictionData_Client() const
 {

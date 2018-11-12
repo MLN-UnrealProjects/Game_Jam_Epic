@@ -6,6 +6,7 @@
 #include "Runtime/Engine/Classes/GameFramework/GameModeBase.h"
 #include "LobbyPlayerController.h"
 #include "Runtime/Engine/Public/TimerManager.h"
+#include "JamPlayerState.h"
 
 bool UJamGameInstance::TryChangeStatus(EGameStatus InGameStatus)
 {
@@ -127,7 +128,7 @@ void UJamGameInstance::ShowServerList()
 {
 	ServerListWidget = ShowWidget(EGameStatus::ServerList, ServerListWidget, ServerListWidgetClass);
 }
-void UJamGameInstance::ShowErrorDialog(FText ErrorMsg, bool bDestroySession , float ShowTime)
+void UJamGameInstance::ShowErrorDialog(FText ErrorMsg, bool bDestroySession, float ShowTime)
 {
 	if (ShowTime < MinErrorShowTime)
 	{
@@ -144,10 +145,30 @@ void UJamGameInstance::ShowErrorDialog(FText ErrorMsg, bool bDestroySession , fl
 		{
 			GetTimerManager().ClearTimer(ErrorTimerHandle);
 		}
-		GetTimerManager().SetTimer(ErrorTimerHandle,this, &UJamGameInstance::CollapseErrorDialog, ShowTime,false);
+		GetTimerManager().SetTimer(ErrorTimerHandle, this, &UJamGameInstance::CollapseErrorDialog, ShowTime, false);
 		if (bDestroySession)
 		{
 			DestroySession();
+		}
+	}
+}
+void UJamGameInstance::LobbyUpdatePlayersMonsterStatus()
+{
+	PlayersData.SetNum(0);
+
+	for (size_t i = 0; i < GetMaxConnections(); i++)
+	{
+		ALobbyPlayerController* PC{ Cast<ALobbyPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), i)) };
+		if (PC)
+		{
+			AJamPlayerState* State{ Cast<AJamPlayerState>(PC->PlayerState) };
+			if (State)
+			{
+				if (PC->NetConnection)
+				{
+					PlayersData.Push(FLobbyPlayerMonsterData{ PC->NetConnection->PlayerId.GetUniqueNetId(), State->GetMonster() });
+				}
+			}
 		}
 	}
 }
@@ -206,4 +227,8 @@ void UJamGameInstance::CollapseErrorDialog()
 	GetTimerManager().ClearTimer(ErrorTimerHandle);
 
 	ShowAndOpenMainMenu();
+}
+FLobbyPlayerMonsterData::FLobbyPlayerMonsterData(const TSharedPtr<const FUniqueNetId>& InPlayerConnectionUniqueId, bool IsMonster) : PlayerConnectionUniqueId{ InPlayerConnectionUniqueId }, bMonster{ IsMonster }
+{
+
 }

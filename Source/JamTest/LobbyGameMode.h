@@ -26,11 +26,13 @@ public:
 	ALobbyGameMode();
 
 	UFUNCTION(BlueprintCallable,BlueprintPure,Category = "Network")
-	int32 GetCurrentlyConnectedPlayersNumber() const { return CurrentlyConnectedPlayers; };
+	FORCEINLINE int32 GetCurrentlyConnectedPlayersNumber() const { return CurrentlyConnectedPlayers; };
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Network")
-	ELobbyStatus GetLobbyState() const { return LobbyStatus; };
-	UFUNCTION(/*Server, Reliable, WithValidation, */BlueprintCallable, Category = "Network")
+	FORCEINLINE ELobbyStatus GetLobbyState() const { return LobbyStatus; };
+	UFUNCTION(BlueprintCallable, Category = "Network")
 	void SetReadyStatus(class AJamPlayerState* PS, bool bReadyStatus);
+	UFUNCTION(BlueprintCallable, Category = "Network")
+	void SetWantsToBeMonster(class AJamPlayerState* PS, bool bWantsToBeMonster);
 protected:
 	UFUNCTION(BlueprintCallable, Category = "Network")
 	void StartGame();
@@ -38,14 +40,12 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Network")
 	FString GameLevelURL = "Game";
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Network")
-	float ReadyTimer = 5.0f;
+	float ReadyTimer = 2.5f;
 
-	//UFUNCTION()
-	//void OnLogin(AGameModeBase* GameMode, APlayerController* PC);
-	//UFUNCTION()
-	//void OnLogout(AGameModeBase* GameMode, AController* PC);
+	UFUNCTION()
+	void OnLoginLogout(AGameModeBase* GameMode, APlayerController* PC);
 
-	//virtual void BeginPlay() override;
+	virtual void BeginPlay() override;
 
 	virtual void Tick(float Deltatime) override;
 

@@ -20,8 +20,20 @@ enum class EGameStatus : uint8
 };
 
 class UUserWidget;
+
+USTRUCT()
+struct JAMTEST_API FLobbyPlayerMonsterData
+{
+	GENERATED_USTRUCT_BODY()
+
+	class TSharedPtr<const FUniqueNetId> PlayerConnectionUniqueId;
+	bool bMonster = false;
+
+	FLobbyPlayerMonsterData() {};
+	FLobbyPlayerMonsterData(const TSharedPtr<const FUniqueNetId>& InPlayerConnectionUniqueId, bool IsMonster);
+};
 /**
- * 
+ *
  */
 UCLASS()
 class JAMTEST_API UJamGameInstance : public UGameInstance
@@ -30,10 +42,10 @@ class JAMTEST_API UJamGameInstance : public UGameInstance
 
 	const float MinErrorShowTime = 1.0f;
 protected:
-	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category = "Game")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Game")
 	EGameStatus GameStatus = EGameStatus::Startup;
 
-	UPROPERTY(EditDefaultsOnly,Category = "Levels")
+	UPROPERTY(EditDefaultsOnly, Category = "Levels")
 	FName MainMenuName = "MainMenu";
 
 	/**
@@ -50,64 +62,78 @@ protected:
 	void NetworkModeChanged();
 
 	UPROPERTY()
-	UUserWidget* MainMenuWidget;
+		UUserWidget* MainMenuWidget;
 	UPROPERTY()
-	UUserWidget* ServerListWidget;
+		UUserWidget* ServerListWidget;
 	UPROPERTY()
-	UUserWidget* LoadingWidget;
+		UUserWidget* LoadingWidget;
 	UPROPERTY()
-	UUserWidget* ErrorDialogWidget;
+		UUserWidget* ErrorDialogWidget;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Setup")
-	bool bEnableLAN = true;
+		bool bEnableLAN = true;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Setup")
-	int32 MaxConnections = 2;
+		int32 MaxConnections = 10;
 
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TSubclassOf<UUserWidget> LoadingWidgetClass;
+		TSubclassOf<UUserWidget> LoadingWidgetClass;
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TSubclassOf<UUserWidget> MainMenuWidgetClass;
+		TSubclassOf<UUserWidget> MainMenuWidgetClass;
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TSubclassOf<UUserWidget> ErrorDialogWidgetClass;
+		TSubclassOf<UUserWidget> ErrorDialogWidgetClass;
 	UPROPERTY(EditDefaultsOnly, Category = "UI")
-	TSubclassOf<UUserWidget> ServerListWidgetClass;
+		TSubclassOf<UUserWidget> ServerListWidgetClass;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Network")
-	int32 MinConnectedPlayersforGame = 2;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Setup")
+		int32 MinConnectedPlayersforGame = 2;
 public:
 	UFUNCTION(BlueprintCallable, Category = "Game")
-	void StartPlayingState();
+		void StartPlayingState();
+	UFUNCTION(BlueprintCallable, Category = "Lobby")
+		void StartLobbyState();
 	UFUNCTION(BlueprintCallable, Category = "Game")
-	void StartLobbyState();
-	UFUNCTION(BlueprintCallable, Category = "Game")
-	void CreateNetSession();
+		void CreateNetSession();
 	UFUNCTION(BlueprintCallable, Category = "UI")
-	void ShowAndOpenMainMenu(bool OpenLevel = true);
+		void ShowAndOpenMainMenu(bool OpenLevel = true);
 	UFUNCTION(BlueprintCallable, Category = "UI")
-	void ShowLoadingScreen();
+		void ShowLoadingScreen();
 	UFUNCTION(BlueprintCallable, Category = "UI")
-	void ShowServerList();
+		void ShowServerList();
 	UFUNCTION(BlueprintCallable, Category = "UI")
-	void ShowErrorDialog(FText ErrorMsg, bool bDestroySession = false, float ShowTime = 1.0f);
+		void ShowErrorDialog(FText ErrorMsg, bool bDestroySession = false, float ShowTime = 1.0f);
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Game")
-	FText& GetLastErrorMsg() { return LastErrorMsg; };
+	FORCEINLINE FText& GetLastErrorMsg() { return LastErrorMsg; };
 
-	UFUNCTION(BlueprintCallable, Category = "Game")
+	UFUNCTION(BlueprintCallable, Category = "Lobby")
+	void LobbyUpdatePlayersMonsterStatus();
+
+	UFUNCTION(BlueprintCallable, Category = "Setup")
 	void SetNetworkMode(bool LanModeActive);
 
-	UFUNCTION(BlueprintCallable, BlueprintPure,Category = "Game")
-	int32 GetMaxConnections() const { return MaxConnections; };
-	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Game")
-	int32 GetMinConnections() const { return MinConnectedPlayersforGame; };
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Setup")
+	FORCEINLINE int32 GetMaxConnections() const { return MaxConnections; };
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Setup")
+	FORCEINLINE int32 GetMinConnections() const { return MinConnectedPlayersforGame; };
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Setup")
+	FORCEINLINE float GetRateoHumansPerMonstersInGame() const { return RateoHumansPerMonstersInGame; };
+
+	UFUNCTION()
+	FORCEINLINE TArray<FLobbyPlayerMonsterData> GetPlayersLobbyData() const { return PlayersData; };
 private:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Setup", meta = (AllowPrivateAccess = "true"))
+	float RateoHumansPerMonstersInGame = 2.0f;
+
 	UFUNCTION()
-	UUserWidget* ShowWidget(EGameStatus InState, UUserWidget* ToInitialize, TSubclassOf<UUserWidget>& Class, bool bForceExec = true);
+		UUserWidget* ShowWidget(EGameStatus InState, UUserWidget* ToInitialize, TSubclassOf<UUserWidget>& Class, bool bForceExec = true);
 	UFUNCTION()
-	void CollapseErrorDialog();
+		void CollapseErrorDialog();
 	UPROPERTY()
-	FText LastErrorMsg;
+		FText LastErrorMsg;
 
 	FTimerHandle ErrorTimerHandle;
+
+	TArray<FLobbyPlayerMonsterData> PlayersData;
 };
+

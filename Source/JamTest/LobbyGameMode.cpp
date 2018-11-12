@@ -16,10 +16,30 @@ ALobbyGameMode::ALobbyGameMode()
 }
 void ALobbyGameMode::StartGame()
 {
+	UJamGameInstance* GI{ Cast<UJamGameInstance>(GetGameInstance()) };
+
+	if (!ensure(GI))
+	{
+		return;
+	}
+
+	GI->LobbyUpdatePlayersMonsterStatus();
+
 	GetWorld()->ServerTravel(GameLevelURL);
+}
+void ALobbyGameMode::OnLoginLogout(AGameModeBase * GameMode, APlayerController * PC)
+{
+	Tick(0.0f);
+}
+void ALobbyGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+	FGameModeEvents::GameModePostLoginEvent.AddUFunction(this, FName{ "OnLoginLogout" });
+	FGameModeEvents::GameModeLogoutEvent.AddUFunction(this, FName{ "OnLoginLogout" });
 }
 void ALobbyGameMode::Tick(float Deltatime)
 {
+	//resets lobby status, to be filled later
 	LobbyStatus = ELobbyStatus::Unknown;
 
 	TArray<APlayerState*> Players{ GameState->PlayerArray };
@@ -33,12 +53,14 @@ void ALobbyGameMode::Tick(float Deltatime)
 		return;
 	}
 
+	//if values are valid initialize lobby status
 	LobbyStatus = ELobbyStatus::WaitingForMinPlayers;
 	if (GI->GetMinConnections() <= CurrentlyConnectedPlayers)
 	{
 		LobbyStatus = ELobbyStatus::WaitingForReadyChecks;
 	}
 
+	//if we are waiting for players ready status check all players current ready check status to verify if they are all ready
 	if (LobbyStatus == ELobbyStatus::WaitingForReadyChecks)
 	{
 		bool bAllPlayersReady{ true };
@@ -61,15 +83,64 @@ void ALobbyGameMode::Tick(float Deltatime)
 		}
 	}
 
+	//Update all players about the lobby status and gets ready for monster/human selection logic
+
+	TArray<APlayerState*> WantToBeMonsters;
+	TArray<APlayerState*> WantToBeHumans;
 	for (size_t i = 0; i < Players.Num(); i++)
 	{
 		AJamPlayerState* PS{ Cast<AJamPlayerState>(Players[i]) };
 		if (PS)
 		{
 			PS->SetLobbyStatus(LobbyStatus);
+			if (PS->GetWantsToBeMonster())
+			{
+				WantToBeMonsters.Push(PS);
+			}
+			else
+			{
+				WantToBeHumans.Push(PS);
+			}
 		}
 	}
 
+	//Monster/human selection logic + all players update
+
+	uint32 HumansCounter{ 0 };
+	uint32 MonstersCounter{ 0 };
+	bool bNextIsMonster{ true };
+
+	while (WantToBeHumans.Num() != 0 || WantToBeMonsters.Num() != 0)
+	{
+		if (bNextIsMonster)
+		{
+			AJamPlayerState* PS{(WantToBeMonsters.Num() != 0 ? Cast<AJamPlayerState>(WantToBeMonsters.Pop()) : Cast<AJamPlayerState>(WantToBeHumans.Pop()))};
+
+			if (PS)
+			{
+				PS->SetMonster(true);
+			}
+
+			MonstersCounter++;
+		}
+		else
+		{
+			AJamPlayerState* PS{ (WantToBeHumans.Num() != 0 ? Cast<AJamPlayerState>(WantToBeHumans.Pop()) : Cast<AJamPlayerState>(WantToBeMonsters.Pop())) };
+			
+			if (PS)
+			{
+				PS->SetMonster(false);
+			}
+
+			HumansCounter++;
+		}
+
+		bNextIsMonster = (static_cast<float>(HumansCounter) / MonstersCounter > GI->GetRateoHumansPerMonstersInGame());
+	}
+
+	GI->LobbyUpdatePlayersMonsterStatus();
+
+	//if game is about to begin starts count down to start game, otherwise block countdown
 	switch (LobbyStatus)
 	{
 	case ELobbyStatus::GameAboutToStart:
@@ -104,5 +175,16 @@ void ALobbyGameMode::AbortCountDownToGame()
 
 void ALobbyGameMode::SetReadyStatus(AJamPlayerState * PS, bool bReadyStatus)
 {
-	PS->SetReadyCheck(bReadyStatus);
+	if (PS)
+	{
+		PS->SetReadyCheck(bReadyStatus);
+	}
+}
+
+void ALobbyGameMode::SetWantsToBeMonster(AJamPlayerState * PS, bool bWantsToBeMonster)
+{
+	if (PS)
+	{
+		PS->SetWantsToBeMonster(bWantsToBeMonster);
+	}
 }

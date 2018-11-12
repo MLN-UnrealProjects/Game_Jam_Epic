@@ -6,18 +6,12 @@ AJamPlayerState::AJamPlayerState()
 {
 	bReplicates = true;
 }
-void AJamPlayerState::SetLobbyStatus(ELobbyStatus InValue)
-{
-	LobbyStatus = InValue;
-}
-ELobbyStatus AJamPlayerState::GetLobbyStatus() const
-{
-	return LobbyStatus;
-}
 void AJamPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AJamPlayerState, LobbyStatus);
 	DOREPLIFETIME(AJamPlayerState, bReadyCheck);
+	DOREPLIFETIME(AJamPlayerState, bMonster);
+	DOREPLIFETIME(AJamPlayerState, bWantsToBeMonster);
 }
 

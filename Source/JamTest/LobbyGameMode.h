@@ -34,6 +34,8 @@ public:
 protected:
 	UFUNCTION(BlueprintCallable, Category = "Network")
 	void StartGame();
+	UFUNCTION(BlueprintImplementableEvent)
+	void EndLobbyEnterGame(class APlayerController* PC);
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Network")
 	FString GameLevelURL = "Game";

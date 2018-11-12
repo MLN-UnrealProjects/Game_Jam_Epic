@@ -19,10 +19,10 @@ class JAMTEST_API ALobbyPlayerController : public APlayerController
 	
 public:
 
-	UFUNCTION(BlueprintCallable, Category = "UI")
+	UFUNCTION(BlueprintCallable,BlueprintPure, Category = "UI")
 		UUserWidget* GetLobbyHUDWidget() const { return LobbyHUDWidget; };
 
-	UFUNCTION(BlueprintCallable, Category = "UI")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "UI")
 		UUserWidget* GetInLobbyMenuWidget() const { return InLobbyMenuWidget; };
 
 	UFUNCTION(BlueprintCallable, Category = "UI")

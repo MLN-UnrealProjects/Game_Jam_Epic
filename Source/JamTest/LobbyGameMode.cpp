@@ -7,6 +7,7 @@
 #include "Runtime/Engine/Public/TimerManager.h"
 #include "JamPlayerState.h"
 #include "UnrealNetwork.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 ALobbyGameMode::ALobbyGameMode()
 {
 	bReplicates = true;
@@ -15,6 +16,15 @@ ALobbyGameMode::ALobbyGameMode()
 }
 void ALobbyGameMode::StartGame()
 {
+	for (size_t i = 0; i < GameState->PlayerArray.Num(); i++)
+	{
+
+		auto PC = UGameplayStatics::GetPlayerController(GetWorld(), i);
+		if (PC)
+		{
+			EndLobbyEnterGame(PC);
+		}
+	}
 	GetWorld()->ServerTravel(GameLevelURL);
 }
 void ALobbyGameMode::Tick(float Deltatime)

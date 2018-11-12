@@ -26,11 +26,11 @@ struct JAMTEST_API FLobbyPlayerMonsterData
 {
 	GENERATED_USTRUCT_BODY()
 
-	class TSharedPtr<const FUniqueNetId> PlayerConnectionUniqueId;
+	struct FUniqueNetIdRepl PlayerConnectionUniqueId;
 	bool bMonster = false;
 
 	FLobbyPlayerMonsterData() {};
-	FLobbyPlayerMonsterData(const TSharedPtr<const FUniqueNetId>& InPlayerConnectionUniqueId, bool IsMonster);
+	FLobbyPlayerMonsterData(FUniqueNetIdRepl InPlayerConnectionUniqueId, bool IsMonster);
 };
 /**
  *

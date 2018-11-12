@@ -8,6 +8,7 @@
 #include "JamPlayerState.h"
 #include "UnrealNetwork.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "LobbyPlayerController.h"
 ALobbyGameMode::ALobbyGameMode()
 {
 	bReplicates = true;
@@ -24,6 +25,15 @@ void ALobbyGameMode::StartGame()
 	}
 
 	GI->LobbyUpdatePlayersMonsterStatus();
+
+	for (size_t i = 0; i < GI->GetMaxConnections(); i++)
+	{
+		ALobbyPlayerController* PC{ Cast<ALobbyPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), i)) };
+		if (PC)
+		{
+			PC->RemoveLobbyWidgets();
+		}
+	}
 
 	GetWorld()->ServerTravel(GameLevelURL);
 }

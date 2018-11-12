@@ -16,13 +16,13 @@ void ALobbyPlayerController::SetupLobbyUI()
 			LobbyHUDWidget = UUserWidget::CreateWidgetOfClass(LobbyHUDWidgetClass.Get(), GetGameInstance(), GetWorld(), this); // Create Widget
 			if (LobbyHUDWidget)
 			{
-				LobbyHUDWidget->AddToViewport(); // Add it to the viewport so the Construct() method in the UUserWidget:: is run.
+				LobbyHUDWidget->AddToViewport(); 
 				LobbyHUDWidget->SetVisibility(ESlateVisibility::Visible);
 			}
 			InLobbyMenuWidget = UUserWidget::CreateWidgetOfClass(InLobbyMenuWidgetClass.Get(), GetGameInstance(), GetWorld(), this); // Create Widget
 			if (InLobbyMenuWidget)
 			{
-				InLobbyMenuWidget->AddToViewport(); // Add it to the viewport so the Construct() method in the UUserWidget:: is run.
+				InLobbyMenuWidget->AddToViewport(); 
 				InLobbyMenuWidget->SetVisibility(ESlateVisibility::Collapsed);
 			}
 		}
@@ -72,4 +72,16 @@ bool ALobbyPlayerController::IsLobbyUIInitialized() const
 bool ALobbyPlayerController::IsInLobbyMenuCollapsed() const
 {
 	return IsLobbyUIInitialized() && InLobbyMenuWidget->GetVisibility() == ESlateVisibility::Collapsed;
+}
+
+void ALobbyPlayerController::RemoveLobbyWidgets_Implementation()
+{
+	if (GetLobbyHUDWidget())
+	{
+		GetLobbyHUDWidget()->SetVisibility(ESlateVisibility::Collapsed);
+	}
+	if (GetInLobbyMenuWidget())
+	{
+		GetInLobbyMenuWidget()->SetVisibility(ESlateVisibility::Collapsed);
+	}
 }

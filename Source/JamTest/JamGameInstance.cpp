@@ -164,10 +164,7 @@ void UJamGameInstance::LobbyUpdatePlayersMonsterStatus()
 			AJamPlayerState* State{ Cast<AJamPlayerState>(PC->PlayerState) };
 			if (State)
 			{
-				if (PC->NetConnection)
-				{
-					PlayersData.Push(FLobbyPlayerMonsterData{ State->UniqueId, State->GetMonster() });
-				}
+				PlayersData.Push(FLobbyPlayerMonsterData{ State->PlayerId, State->GetMonster() });
 			}
 		}
 	}
@@ -228,7 +225,7 @@ void UJamGameInstance::CollapseErrorDialog()
 
 	ShowAndOpenMainMenu();
 }
-FLobbyPlayerMonsterData::FLobbyPlayerMonsterData(FUniqueNetIdRepl InPlayerConnectionUniqueId, bool IsMonster) : PlayerConnectionUniqueId{ InPlayerConnectionUniqueId }, bMonster{ IsMonster }
+FLobbyPlayerMonsterData::FLobbyPlayerMonsterData(int32 InPlayerNetId, bool IsMonster) : PlayerNetId{ InPlayerNetId }, bMonster{ IsMonster }
 {
 
 }

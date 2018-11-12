@@ -25,6 +25,8 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "UI")
 		UUserWidget* GetInLobbyMenuWidget() const { return InLobbyMenuWidget; };
 
+	UFUNCTION(Client, Reliable,BlueprintCallable, Category = "UI")
+		void RemoveLobbyWidgets();
 	UFUNCTION(BlueprintCallable, Category = "UI")
 		void ShowInLobbyMenu();
 	UFUNCTION(BlueprintCallable, Category = "UI")

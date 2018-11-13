@@ -22,9 +22,9 @@ enum class EGameStatus : uint8
 UENUM(BlueprintType)	//"BlueprintType" is essential to include 
 enum class EPlayerType : uint8
 {
+	Undefined UMETA(DisplayName = "Unknown"),
 	Monster UMETA(DisplayName = "Monster"),
 	Human UMETA(DisplayName = "Human"),
-	Undefined UMETA(DisplayName = "Unknown"),
 };
 
 class UUserWidget;

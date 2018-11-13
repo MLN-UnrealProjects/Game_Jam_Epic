@@ -17,6 +17,13 @@ class JAMTEST_API AJamGameMode : public AGameMode
 	//virtual UClass* GetDefaultPawnClassForController(AController* InController) override;
 	//bool ReadyToStartMatch();
 	virtual void Tick(float Deltatime) override;
+	virtual void BeginPlay() override;
 	bool bGameStarted = false;
+	AActor* GetRandomSpawnLocation();
+	TArray<AActor*> SpawnPoints;
+
+public:
+	UFUNCTION(BlueprintCallable,Category = "Setup")
+	void PopulateSpawnPoints();
 
 };

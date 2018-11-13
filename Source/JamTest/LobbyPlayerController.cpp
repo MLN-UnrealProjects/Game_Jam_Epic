@@ -2,7 +2,7 @@
 
 #include "LobbyPlayerController.h"
 
-
+#include "JamGameInstance.h"
 
 #include "Runtime/UMG/Public/Blueprint/UserWidget.h"
 
@@ -88,4 +88,9 @@ void ALobbyPlayerController::RemoveLobbyWidgets_Implementation()
 	Mode.SetConsumeCaptureMouseDown(false);
 	SetInputMode(Mode);
 	bShowMouseCursor = false;
+	UJamGameInstance* GI{ Cast<UJamGameInstance>(GetGameInstance()) };
+	if (ensure(GI))
+	{
+		GI->LobbyUpdatePlayersMonsterStatus();
+	}
 }

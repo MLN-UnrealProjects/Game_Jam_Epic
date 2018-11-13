@@ -24,8 +24,6 @@ void ALobbyGameMode::StartGame()
 		return;
 	}
 
-	GI->LobbyUpdatePlayersMonsterStatus();
-
 	for (size_t i = 0; i < GI->GetMaxConnections(); i++)
 	{
 		ALobbyPlayerController* PC{ Cast<ALobbyPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), i)) };
@@ -46,7 +44,7 @@ void ALobbyGameMode::SpreadGamePlayerstateInfo_Implementation()
 		return;
 	}
 
-	GI->LobbyUpdatePlayersMonsterStatus();
+	GI->LobbyUpdatePlayersMonsterStatusLocal();
 }
 void ALobbyGameMode::OnLoginLogout(AGameModeBase * GameMode, APlayerController * PC)
 {
@@ -159,7 +157,7 @@ void ALobbyGameMode::Tick(float Deltatime)
 		bNextIsMonster = (static_cast<float>(HumansCounter) / MonstersCounter > GI->GetRateoHumansPerMonstersInGame());
 	}
 
-	GI->LobbyUpdatePlayersMonsterStatus();
+	GI->StartPlayingState();
 
 	//if game is about to begin starts count down to start game, otherwise block countdown
 	switch (LobbyStatus)

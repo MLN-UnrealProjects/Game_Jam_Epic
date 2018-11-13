@@ -83,7 +83,7 @@ void UJamGameInstance::StartPlayingState()
 	{
 		LoadingWidget->RemoveFromViewport();
 	}
-	LobbyUpdatePlayersMonsterStatus();
+	LobbyUpdatePlayersMonsterStatusLocal();
 }
 void UJamGameInstance::StartLobbyState()
 {
@@ -154,15 +154,7 @@ void UJamGameInstance::ShowErrorDialog(FText ErrorMsg, bool bDestroySession, flo
 		}
 	}
 }
-void UJamGameInstance::LobbyUpdatePlayersMonsterStatus_Implementation()
-{
-	LobbyUpdatePlayersMonsterStatusLocal();
-}
-bool UJamGameInstance::LobbyUpdatePlayersMonsterStatus_Validate()
-{
-	return true;
-}
-void UJamGameInstance::LobbyUpdatePlayersMonsterStatusLocal_Implementation()
+void UJamGameInstance::LobbyUpdatePlayersMonsterStatusLocal()
 {
 	ALobbyPlayerController* PC{ Cast<ALobbyPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0)) };
 	if (PC)

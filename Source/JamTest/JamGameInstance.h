@@ -119,9 +119,7 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Game")
 	FORCEINLINE FText& GetLastErrorMsg() { return LastErrorMsg; };
 
-	UFUNCTION(Server, Reliable , WithValidation,BlueprintCallable, Category = "Lobby")
-	void LobbyUpdatePlayersMonsterStatus();
-	UFUNCTION(NetMulticast, Reliable, BlueprintCallable, Category = "Lobby")
+	UFUNCTION(BlueprintCallable, Category = "Lobby")
 	void LobbyUpdatePlayersMonsterStatusLocal();
 
 	UFUNCTION(BlueprintCallable, Category = "Setup")

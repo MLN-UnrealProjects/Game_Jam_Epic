@@ -91,6 +91,6 @@ void ALobbyPlayerController::RemoveLobbyWidgets_Implementation()
 	UJamGameInstance* GI{ Cast<UJamGameInstance>(GetGameInstance()) };
 	if (ensure(GI))
 	{
-		GI->LobbyUpdatePlayersMonsterStatus();
+		GI->LobbyUpdatePlayersMonsterStatusLocal();
 	}
 }

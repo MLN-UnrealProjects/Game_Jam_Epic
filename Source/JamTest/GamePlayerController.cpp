@@ -29,8 +29,13 @@ bool AGamePlayerController::IsMonster() const
 bool AGamePlayerController::IsAlive() const
 {
 	AJamCharacter* Char{ Cast<AJamCharacter>(GetPawn()) };
-	
-	return Char->Health > 0.0f;
+
+	if (Char)
+	{
+		return Char->Health > 0.0f;
+	}
+
+	return false;
 }
 
 

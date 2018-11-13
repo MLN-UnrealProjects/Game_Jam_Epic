@@ -37,6 +37,17 @@ void ALobbyGameMode::StartGame()
 
 	GetWorld()->ServerTravel(GameLevelURL);
 }
+void ALobbyGameMode::SpreadGamePlayerstateInfo_Implementation()
+{
+	UJamGameInstance* GI{ Cast<UJamGameInstance>(GetGameInstance()) };
+
+	if (!ensure(GI))
+	{
+		return;
+	}
+
+	GI->LobbyUpdatePlayersMonsterStatus();
+}
 void ALobbyGameMode::OnLoginLogout(AGameModeBase * GameMode, APlayerController * PC)
 {
 	Tick(0.0f);

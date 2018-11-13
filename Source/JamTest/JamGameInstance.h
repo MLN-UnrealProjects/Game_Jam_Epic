@@ -19,18 +19,29 @@ enum class EGameStatus : uint8
 	Unknown UMETA(DisplayName = "Unknown")
 };
 
+UENUM(BlueprintType)	//"BlueprintType" is essential to include 
+enum class EPlayerType : uint8
+{
+	Monster UMETA(DisplayName = "Monster"),
+	Human UMETA(DisplayName = "Human"),
+	Undefined UMETA(DisplayName = "Unknown"),
+};
+
 class UUserWidget;
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct JAMTEST_API FLobbyPlayerMonsterData
 {
 	GENERATED_USTRUCT_BODY()
-
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "PlayerData")
 	int32 PlayerNetId = -1;
-	bool bMonster = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerData")
+	EPlayerType PlayerType = EPlayerType::Undefined;
+
+
 
 	FLobbyPlayerMonsterData() {};
-	FLobbyPlayerMonsterData(int32 InPlayerNetId, bool IsMonster);
+	FLobbyPlayerMonsterData(int32 InPlayerNetId, EPlayerType InPlayerType);
 };
 /**
  *
@@ -42,7 +53,7 @@ class JAMTEST_API UJamGameInstance : public UGameInstance
 
 	const float MinErrorShowTime = 1.0f;
 protected:
-	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const;
+	//void GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Game")
 	EGameStatus GameStatus = EGameStatus::Startup;
@@ -108,12 +119,18 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Game")
 	FORCEINLINE FText& GetLastErrorMsg() { return LastErrorMsg; };
 
-	UFUNCTION(NetMulticast, Reliable,BlueprintCallable, Category = "Lobby")
+	UFUNCTION(Server, Reliable , WithValidation,BlueprintCallable, Category = "Lobby")
 	void LobbyUpdatePlayersMonsterStatus();
+	UFUNCTION(NetMulticast, Reliable, BlueprintCallable, Category = "Lobby")
+	void LobbyUpdatePlayersMonsterStatusLocal();
 
 	UFUNCTION(BlueprintCallable, Category = "Setup")
 	void SetNetworkMode(bool LanModeActive);
 
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "PlayerData")
+	FORCEINLINE int32 GetLocalPlayerNetId() const { return PlayerData.PlayerNetId; }
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "PlayerData")
+	FORCEINLINE EPlayerType GetLocalPlayerType() const { return PlayerData.PlayerType; }
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Setup")
 	FORCEINLINE int32 GetMaxConnections() const { return MaxConnections; };
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Setup")
@@ -121,8 +138,8 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Setup")
 	FORCEINLINE float GetRateoHumansPerMonstersInGame() const { return RateoHumansPerMonstersInGame; };
 
-	UFUNCTION()
-	FORCEINLINE TArray<FLobbyPlayerMonsterData> GetPlayersLobbyData() const { return PlayersData; };
+	UFUNCTION(BlueprintCallable,BlueprintPure,Category = "Game")
+	FORCEINLINE FLobbyPlayerMonsterData GetPlayerLobbyData() const { return PlayerData; };
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Setup", meta = (AllowPrivateAccess = "true"))
 	float RateoHumansPerMonstersInGame = 2.0f;
@@ -136,7 +153,6 @@ private:
 
 	FTimerHandle ErrorTimerHandle;
 
-	UPROPERTY(Replicated)
-	TArray<FLobbyPlayerMonsterData> PlayersData;
+	FLobbyPlayerMonsterData PlayerData;
 };
 

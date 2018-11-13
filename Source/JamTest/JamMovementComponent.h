@@ -26,7 +26,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dash")
 	FVector MoveDirection; 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dash")
-	float DashStrength = 100.0f;
+	float DashStrength = 4000.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dash")
 	float GroundDashStrengthMultiplier = 1.0f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Dash")

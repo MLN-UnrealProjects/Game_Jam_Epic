@@ -45,6 +45,9 @@ protected:
 	UFUNCTION()
 	void OnLoginLogout(AGameModeBase* GameMode, APlayerController* PC);
 
+	UFUNCTION(NetMulticast,Reliable)
+	void SpreadGamePlayerstateInfo();
+
 	virtual void BeginPlay() override;
 
 	virtual void Tick(float Deltatime) override;

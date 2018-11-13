@@ -83,6 +83,7 @@ void UJamGameInstance::StartPlayingState()
 	{
 		LoadingWidget->RemoveFromViewport();
 	}
+	LobbyUpdatePlayersMonsterStatus();
 }
 void UJamGameInstance::StartLobbyState()
 {
@@ -155,18 +156,22 @@ void UJamGameInstance::ShowErrorDialog(FText ErrorMsg, bool bDestroySession, flo
 }
 void UJamGameInstance::LobbyUpdatePlayersMonsterStatus_Implementation()
 {
-	PlayersData.SetNum(0);
-
-	for (size_t i = 0; i < GetMaxConnections(); i++)
+	LobbyUpdatePlayersMonsterStatusLocal();
+}
+bool UJamGameInstance::LobbyUpdatePlayersMonsterStatus_Validate()
+{
+	return true;
+}
+void UJamGameInstance::LobbyUpdatePlayersMonsterStatusLocal_Implementation()
+{
+	ALobbyPlayerController* PC{ Cast<ALobbyPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0)) };
+	if (PC)
 	{
-		ALobbyPlayerController* PC{ Cast<ALobbyPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), i)) };
-		if (PC)
+		AJamPlayerState* State{ Cast<AJamPlayerState>(PC->PlayerState) };
+		if (State)
 		{
-			AJamPlayerState* State{ Cast<AJamPlayerState>(PC->PlayerState) };
-			if (State)
-			{
-				PlayersData.Push(FLobbyPlayerMonsterData{ State->PlayerId, State->GetMonster() });
-			}
+			EPlayerType Type{ State->GetMonster() ? EPlayerType::Monster : EPlayerType::Human };
+			PlayerData = FLobbyPlayerMonsterData{ State->PlayerId , Type };
 		}
 	}
 }
@@ -226,12 +231,12 @@ void UJamGameInstance::CollapseErrorDialog()
 
 	ShowAndOpenMainMenu();
 }
-FLobbyPlayerMonsterData::FLobbyPlayerMonsterData(int32 InPlayerNetId, bool IsMonster) : PlayerNetId{ InPlayerNetId }, bMonster{ IsMonster }
+FLobbyPlayerMonsterData::FLobbyPlayerMonsterData(int32 InPlayerNetId, EPlayerType InPlayerType) : PlayerNetId{ InPlayerNetId }, PlayerType{ InPlayerType }
 {
 
 }
-void UJamGameInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(UJamGameInstance, PlayersData);
-}
+//void UJamGameInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const
+//{
+//	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+//	DOREPLIFETIME(UJamGameInstance, PlayerData);
+//}

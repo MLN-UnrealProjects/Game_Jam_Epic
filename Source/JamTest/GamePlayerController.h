@@ -13,8 +13,13 @@ UCLASS()
 class JAMTEST_API AGamePlayerController : public APlayerController
 {
 	GENERATED_BODY()
-	
-	
-	
-	
+
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category = "Setup",meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<class AJamCharacter> MonsterPawn;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Setup", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<class AJamCharacter> HumanPawn;
+
+public:
+	UFUNCTION(BlueprintCallable,BlueprintPure,Category = "Pawn")
+	TSubclassOf<class AJamCharacter> GetPawnClassToUse() const;
 };

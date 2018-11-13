@@ -3,18 +3,20 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameModeBase.h"
+#include "Runtime/Engine/Classes/GameFramework/GameMode.h"
 #include "JamGameMode.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class JAMTEST_API AJamGameMode : public AGameModeBase
+class JAMTEST_API AJamGameMode : public AGameMode
 {
 	GENERATED_BODY()
-	
-	
-	
-	
+	AJamGameMode(const FObjectInitializer& ObjectIn);
+	//virtual UClass* GetDefaultPawnClassForController(AController* InController) override;
+	//bool ReadyToStartMatch();
+	virtual void Tick(float Deltatime) override;
+	bool bGameStarted = false;
+
 };

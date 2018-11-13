@@ -84,4 +84,8 @@ void ALobbyPlayerController::RemoveLobbyWidgets_Implementation()
 	{
 		GetInLobbyMenuWidget()->SetVisibility(ESlateVisibility::Collapsed);
 	}
+	FInputModeGameOnly Mode{};
+	Mode.SetConsumeCaptureMouseDown(false);
+	SetInputMode(Mode);
+	bShowMouseCursor = false;
 }

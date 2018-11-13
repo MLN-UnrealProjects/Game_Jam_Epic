@@ -7,6 +7,7 @@
 #include "LobbyPlayerController.h"
 #include "Runtime/Engine/Public/TimerManager.h"
 #include "JamPlayerState.h"
+#include "UnrealNetwork.h"
 
 bool UJamGameInstance::TryChangeStatus(EGameStatus InGameStatus)
 {
@@ -152,7 +153,7 @@ void UJamGameInstance::ShowErrorDialog(FText ErrorMsg, bool bDestroySession, flo
 		}
 	}
 }
-void UJamGameInstance::LobbyUpdatePlayersMonsterStatus()
+void UJamGameInstance::LobbyUpdatePlayersMonsterStatus_Implementation()
 {
 	PlayersData.SetNum(0);
 
@@ -228,4 +229,9 @@ void UJamGameInstance::CollapseErrorDialog()
 FLobbyPlayerMonsterData::FLobbyPlayerMonsterData(int32 InPlayerNetId, bool IsMonster) : PlayerNetId{ InPlayerNetId }, bMonster{ IsMonster }
 {
 
+}
+void UJamGameInstance::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UJamGameInstance, PlayersData);
 }

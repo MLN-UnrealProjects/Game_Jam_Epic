@@ -42,6 +42,8 @@ class JAMTEST_API UJamGameInstance : public UGameInstance
 
 	const float MinErrorShowTime = 1.0f;
 protected:
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Game")
 	EGameStatus GameStatus = EGameStatus::Startup;
 
@@ -106,7 +108,7 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Game")
 	FORCEINLINE FText& GetLastErrorMsg() { return LastErrorMsg; };
 
-	UFUNCTION(BlueprintCallable, Category = "Lobby")
+	UFUNCTION(NetMulticast, Reliable,BlueprintCallable, Category = "Lobby")
 	void LobbyUpdatePlayersMonsterStatus();
 
 	UFUNCTION(BlueprintCallable, Category = "Setup")
@@ -134,6 +136,7 @@ private:
 
 	FTimerHandle ErrorTimerHandle;
 
+	UPROPERTY(Replicated)
 	TArray<FLobbyPlayerMonsterData> PlayersData;
 };
 

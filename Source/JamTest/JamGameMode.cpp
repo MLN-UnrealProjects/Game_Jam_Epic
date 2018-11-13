@@ -45,7 +45,7 @@ void AJamGameMode::Tick(float Deltatime)
 
 	if (!bGameStarted)
 	{
-		if (NumTravellingPlayers == 0)
+		if (NumPlayers != 0 && NumTravellingPlayers == 0)
 		{
 			for (size_t i = 0; i < GI->GetMaxConnections(); i++)
 			{
@@ -55,14 +55,15 @@ void AJamGameMode::Tick(float Deltatime)
 					TSubclassOf<AJamCharacter> PawnToSpawn{ PC->GetPawnClassToUse() };
 					if (PawnToSpawn)
 					{
-						DefaultPawnClass = PawnToSpawn;
-						SpawnDefaultPawnFor(PC, GetRandomSpawnLocation());
+						AActor* SpawnActor{ GetRandomSpawnLocation() };
+						APawn* Pawn{ GetWorld()->SpawnActor<APawn>(PawnToSpawn.Get(), SpawnActor->GetTransform()) };
+						PC->Possess(Pawn);
 					}
 				}
 			}
-			DefaultPawnClass = nullptr;
 			bGameStarted = true;
 			StartMatch();
+			return;
 		}
 		return;
 	}

@@ -4,31 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Runtime/Engine/Classes/GameFramework/GameMode.h"
-#include "JamGameInstance.h" //TODO: non mi piace quessto include
+#include "ServersList.h" //TODO: non mi piace quessto include
 #include "JamGameMode.generated.h"
 
-UENUM(BlueprintType)	//"BlueprintType" is essential to include 
-enum class EMatchStatus : uint8
-{
-	Unknown UMETA(DisplayName = "Unknown"),
-	MatchAboutToStart UMETA(DisplayName = "Match is about to start"),
-	MatchOngoing UMETA(DisplayName = "Match is Ongoing"),
-	MatchOver UMETA(DisplayName = "Match is Over"),
-};
-USTRUCT(BlueprintType)
-struct JAMTEST_API FMatchPlayerData
-{
-	GENERATED_USTRUCT_BODY()
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerData")
-	class AGamePlayerController* PC = nullptr;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerData")
-	EPlayerType PlayerType = EPlayerType::Undefined;
 
 
-
-	FMatchPlayerData() {};
-	FMatchPlayerData(AGamePlayerController* InPC, EPlayerType InPlayerType);
-};
 /**
  * 
  */
@@ -45,8 +25,7 @@ protected:
 	EMatchStatus MatchStatus = EMatchStatus::Unknown;
 	AActor* GetRandomSpawnLocation();
 	TArray<AActor*> SpawnPoints;
-	UPROPERTY(BlueprintReadOnly,Category = "Players")
-	TArray<FMatchPlayerData> Players;
+
 	void WaitForPlayersToConnect(class UJamGameInstance * GI);
 	void UpdateMatchStatus(class UJamGameInstance * GI);
 public:

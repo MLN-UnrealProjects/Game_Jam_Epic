@@ -9,6 +9,8 @@
 #include "Engine/World.h"
 #include "Runtime/Engine/Public/EngineUtils.h"
 #include "Runtime/Engine/Classes/Engine/TargetPoint.h"
+#include "Runtime/Engine/Classes/GameFramework/PlayerState.h"
+#include "LobbyGameMode.h"
 AJamGameMode::AJamGameMode(const FObjectInitializer& ObjectIn) : AGameMode(ObjectIn)
 {
 	bDelayedStart = true;
@@ -20,6 +22,7 @@ void AJamGameMode::BeginPlay()
 {
 	PopulateSpawnPoints();
 	MatchStatus = EMatchStatus::MatchAboutToStart;
+	//Players = Cast<UJamGameInstance>(GetGameInstance())->GetServerPlayerList();
 	Super::BeginPlay();
 }
 AActor * AJamGameMode::GetRandomSpawnLocation()
@@ -66,27 +69,34 @@ void AJamGameMode::Tick(float Deltatime)
 }
 void AJamGameMode::UpdateMatchStatus(UJamGameInstance * GI)
 {
+	auto Players = Cast<UJamGameInstance>(GetGameInstance())->GetServerPlayerList();
 	bool bAllMonstersDead{ true };
 	bool bAllHumansDead{ true };
 	for (size_t i = 0; i < Players.Num(); i++)
 	{
-		FMatchPlayerData Data{ Players[i] };
+		//FMatchPlayerData Data{ Players[i] };
 
-		switch (Data.PlayerType)
+		switch (Players[i].PlayerCharacter)
 		{
 		case EPlayerType::Undefined:
 			ensure(false);
 			break;
 		case EPlayerType::Monster:
-			if (Data.PC->IsAlive())
+			if (Cast<AGamePlayerController>(Players[i].PlayerController))
 			{
-				bAllMonstersDead = false;
+				if (Cast<AGamePlayerController>(Players[i].PlayerController)->IsAlive())
+				{
+					bAllMonstersDead = false;
+				}
 			}
 			break;
 		case EPlayerType::Human:
-			if (Data.PC->IsAlive())
+			if (Cast<AGamePlayerController>(Players[i].PlayerController))
 			{
-				bAllHumansDead = false;
+				if (Cast<AGamePlayerController>(Players[i].PlayerController)->IsAlive())
+				{
+					bAllHumansDead = false;
+				}
 			}
 			break;
 		default:
@@ -117,10 +127,44 @@ void AJamGameMode::UpdateMatchStatus(UJamGameInstance * GI)
 }
 void AJamGameMode::WaitForPlayersToConnect(UJamGameInstance * GI)
 {
-	while (Players.Num() != 0)
-	{
-		Players.Pop();
-	}
+	//while (Players.Num() != 0)
+	//{
+	//	Players.Pop();
+	//}
+
+	//if (NumPlayers != 0 && NumTravellingPlayers == 0)
+	//{
+	//	for (size_t i = 0; i < GI->GetMaxConnections(); i++)
+	//	{
+	//		AGamePlayerController* PC{ Cast<AGamePlayerController>(UGameplayStatics::GetPlayerController(GetWorld(),i)) };
+	//		if (PC)
+	//		{
+
+	//			EPlayerType Type{};
+	//			if (PC->IsMonster())
+	//			{
+	//				Type = EPlayerType::Monster;
+	//			}
+	//			else
+	//			{
+	//				Type = EPlayerType::Human;
+	//			}
+	//			FMatchPlayerData Data{ PC,Type };
+	//			Players.Push(Data);
+
+	//			TSubclassOf<AJamCharacter> PawnToSpawn{ PC->GetPawnClassToUse() };
+	//			if (PawnToSpawn)
+	//			{
+	//				AActor* SpawnActor{ GetRandomSpawnLocation() };
+	//				APawn* Pawn{ GetWorld()->SpawnActor<APawn>(PawnToSpawn.Get(), SpawnActor->GetTransform()) };
+	//				PC->Possess(Pawn);
+	//			}
+	//		}
+	//	}
+	//	MatchStatus = EMatchStatus::MatchOngoing;
+	//	StartMatch();
+	//}
+	auto Players = Cast<UJamGameInstance>(GetGameInstance())->GetServerPlayerList();
 
 	if (NumPlayers != 0 && NumTravellingPlayers == 0)
 	{
@@ -129,18 +173,16 @@ void AJamGameMode::WaitForPlayersToConnect(UJamGameInstance * GI)
 			AGamePlayerController* PC{ Cast<AGamePlayerController>(UGameplayStatics::GetPlayerController(GetWorld(),i)) };
 			if (PC)
 			{
-
-				EPlayerType Type{};
-				if (PC->IsMonster())
+				bool found = false;
+				for (size_t i = 0; i < Players.Num(); i++)
 				{
-					Type = EPlayerType::Monster;
+					if (Players[i].NetId == PC->PlayerState->PlayerId)
+					{
+						Players[i].SetPlayerController(PC);
+						PC->SetIsMonster(Players[i].PlayerCharacter == EPlayerType::Monster);
+						found = true;
+					}
 				}
-				else
-				{
-					Type = EPlayerType::Human;
-				}
-				FMatchPlayerData Data{ PC,Type };
-				Players.Push(Data);
 
 				TSubclassOf<AJamCharacter> PawnToSpawn{ PC->GetPawnClassToUse() };
 				if (PawnToSpawn)
@@ -154,8 +196,4 @@ void AJamGameMode::WaitForPlayersToConnect(UJamGameInstance * GI)
 		MatchStatus = EMatchStatus::MatchOngoing;
 		StartMatch();
 	}
-}
-
-FMatchPlayerData::FMatchPlayerData(AGamePlayerController * InPC, EPlayerType InPlayerType) : PC{InPC} , PlayerType{ InPlayerType }
-{
 }

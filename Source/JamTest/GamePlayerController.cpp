@@ -6,14 +6,7 @@
 #include "Runtime/UMG/Public/Blueprint/UserWidget.h"
 TSubclassOf<AJamCharacter> AGamePlayerController::GetPawnClassToUse() const
 {
-	UJamGameInstance* GI{ Cast<UJamGameInstance>(GetGameInstance()) };
-
-	if (!ensure(GI) || GI->GetLocalPlayerType() == EPlayerType::Undefined)
-	{
-		return nullptr;
-	}
-
-	if (GI->GetLocalPlayerType() == EPlayerType::Human)
+	if (!bIsMonster)
 	{
 		return HumanPawn;
 	}
@@ -23,7 +16,11 @@ TSubclassOf<AJamCharacter> AGamePlayerController::GetPawnClassToUse() const
 
 bool AGamePlayerController::IsMonster() const
 {
-	return GetPawnClassToUse() == MonsterPawn;
+	return bIsMonster;
+}
+void AGamePlayerController::SetIsMonster(bool val) 
+{
+	 bIsMonster = val;
 }
 
 bool AGamePlayerController::IsAlive() const

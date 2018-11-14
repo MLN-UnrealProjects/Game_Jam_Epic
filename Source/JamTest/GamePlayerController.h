@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
-#include "JamGameInstance.h" //TODO: non mi piace include
+#include "ServersList.h" //TODO: non mi piace quessto include
 #include "GamePlayerController.generated.h"
 class UUserWidget;
 /**
@@ -20,11 +20,14 @@ class JAMTEST_API AGamePlayerController : public APlayerController
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Setup", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<class AJamCharacter> HumanPawn;
 
+	bool bIsMonster;
 public:
 	UFUNCTION(BlueprintCallable,BlueprintPure,Category = "Pawn")
 	TSubclassOf<class AJamCharacter> GetPawnClassToUse() const;
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Pawn")
-	FORCEINLINE bool IsMonster() const;
+	 bool IsMonster() const;
+	UFUNCTION(BlueprintCallable, Category = "Pawn")
+		 void SetIsMonster(bool val);
 	UFUNCTION(BlueprintCallable,BlueprintPure, Category = "Pawn")
 	bool IsAlive() const;
 	UFUNCTION(Client, Reliable, BlueprintCallable, Category = "EndGame")
@@ -40,5 +43,5 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	UUserWidget* EndGameScreen = nullptr;
 	UPROPERTY(BlueprintReadOnly)
-	EPlayerType WinningFaction = EPlayerType::Undefined;
+	EPlayerType WinningFaction;
 };

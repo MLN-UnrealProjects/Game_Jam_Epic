@@ -9,6 +9,7 @@
 #include "UnrealNetwork.h"
 #include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
 #include "LobbyPlayerController.h"
+#include "JamGameMode.h"
 ALobbyGameMode::ALobbyGameMode()
 {
 	bReplicates = true;
@@ -23,13 +24,18 @@ void ALobbyGameMode::StartGame()
 	{
 		return;
 	}
-
+	while (GI->GetServerPlayerList().Num() != 0)
+	{
+		GI->GetServerPlayerList().Pop();
+	}
 	for (size_t i = 0; i < GI->GetMaxConnections(); i++)
 	{
 		ALobbyPlayerController* PC{ Cast<ALobbyPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), i)) };
 		if (PC)
 		{
 			PC->RemoveLobbyWidgets();
+			AJamPlayerState* ST{ Cast<AJamPlayerState>(PC->PlayerState) };
+			GI->GetServerPlayerList().Push(FLobbyPlayerMonsterData{ST->PlayerId,(ST->GetMonster() ? EPlayerType::Monster : EPlayerType::Human) });
 		}
 	}
 

@@ -4,16 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "ServersList.h" //TODO: non mi piace quessto include
 #include "LobbyGameMode.generated.h"
 
-UENUM(BlueprintType)	//"BlueprintType" is essential to include 
-enum class ELobbyStatus : uint8
-{
-	GameAboutToStart UMETA(DisplayName = "Game is about to start"),
-	WaitingForMinPlayers UMETA(DisplayName = "Waiting for minimum amount of players for game"),
-	WaitingForReadyChecks UMETA(DisplayName = "Waiting for players ready status"),
-	Unknown UMETA(DisplayName = "Unknown")
-};
 /**
  * 
  */

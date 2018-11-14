@@ -223,7 +223,11 @@ void UJamGameInstance::CollapseErrorDialog()
 
 	ShowAndOpenMainMenu();
 }
-FLobbyPlayerMonsterData::FLobbyPlayerMonsterData(int32 InPlayerNetId, EPlayerType InPlayerType) : PlayerNetId{ InPlayerNetId }, PlayerType{ InPlayerType }
+void FLobbyPlayerMonsterData::SetPlayerController(APlayerController* NewPlayerController)
+{
+	PlayerController = NewPlayerController; 
+}
+FLobbyPlayerMonsterData::FLobbyPlayerMonsterData(int32 InPlayerNetId, EPlayerType InPlayerType) : NetId{ InPlayerNetId }, PlayerCharacter{ InPlayerType }
 {
 
 }

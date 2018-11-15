@@ -6,12 +6,12 @@
 #include "Runtime/UMG/Public/Blueprint/UserWidget.h"
 TSubclassOf<AJamCharacter> AGamePlayerController::GetPawnClassToUse() const
 {
-	if (!bIsMonster)
+	if (bIsMonster)
 	{
-		return HumanPawn;
+		return MonsterPawn;
 	}
 
-	return MonsterPawn;
+	return HumanPawn;
 }
 
 bool AGamePlayerController::IsMonster() const

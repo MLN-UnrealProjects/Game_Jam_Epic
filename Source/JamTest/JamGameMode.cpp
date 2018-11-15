@@ -184,7 +184,6 @@ void AJamGameMode::WaitForPlayersToConnect(UJamGameInstance * GI)
 			AGamePlayerController* PC{ Cast<AGamePlayerController>(UGameplayStatics::GetPlayerController(GetWorld(),i)) };
 			if (PC)
 			{
-
 				GeneratePlayers(Players, PC);
 			}
 		}
@@ -210,11 +209,11 @@ void AJamGameMode::GeneratePlayers(TArray<FLobbyPlayerMonsterData> &Players, AGa
 				PC->SetIsMonster(Players[i].PlayerCharacter == EPlayerType::Monster);
 				if (PC->IsMonster())
 				{
-					SelectModelInfosNPC();
+					SelectModelInfos(MeshesNPC);
 				}
 				else
 				{
-					SelectModelInfosHuman();
+					SelectModelInfos(MeshesHumans);
 				}
 				found = true;
 				break;
@@ -226,11 +225,13 @@ void AJamGameMode::GeneratePlayers(TArray<FLobbyPlayerMonsterData> &Players, AGa
 		//Done only if Lobby Players list is empty, host is moster, all others are human
 		if (PC == Cast<AGamePlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0)))
 		{
-			SelectModelInfosNPC();
+			SelectModelInfos(MeshesNPC);
+			PC->SetIsMonster(true);
 		}
 		else
 		{
-			SelectModelInfosHuman();
+			SelectModelInfos(MeshesHumans);
+			PC->SetIsMonster(false);
 		}
 	}
 
@@ -250,23 +251,17 @@ void AJamGameMode::GeneratePlayers(TArray<FLobbyPlayerMonsterData> &Players, AGa
 	}
 }
 
-void AJamGameMode::SelectModelInfosNPC()
-{
-	//SelectedMesh = MeshesNPC[FMath::RandRange(0, MeshesNPC.Num() - 1)];
-	//SelectedMaterial = MaterialsNPC[FMath::RandRange(0, MaterialsNPC.Num() - 1)];
-	int32 MeshId = FMath::RandRange(0, MeshesNPC.Num() - 1);
-	int32 MaterialId = FMath::RandRange(0, MeshesNPC[MeshId].GetMaterials().Num() - 1);
-	SelectedMesh = MeshesNPC[MeshId].GetMesh();
-	SelectedMaterial = MeshesNPC[MeshId].GetMaterials()[MaterialId];
-	SelectedAnimBP = MeshesNPC[MeshId].GetAnimBP();
-}
-void AJamGameMode::SelectModelInfosHuman()
+void AJamGameMode::SelectModelInfos(TArray<FMatchPlayerModels>& Infos)
 {
 	//SelectedMesh = MeshesHumans[FMath::RandRange(0, MeshesHumans.Num() - 1)];
 	//SelectedMaterial = MaterialsHumans[FMath::RandRange(0, MaterialsHumans.Num() - 1)];
-	int32 MeshId = FMath::RandRange(0, MeshesHumans.Num() - 1);
-	int32 MaterialId = FMath::RandRange(0, MeshesHumans[MeshId].GetMaterials().Num() - 1);
-	SelectedMesh = MeshesHumans[MeshId].GetMesh();
-	SelectedMaterial = MeshesHumans[MeshId].GetMaterials()[MaterialId];
-	SelectedAnimBP = MeshesNPC[MeshId].GetAnimBP();
+	int32 MeshId = FMath::RandRange(0, Infos.Num() - 1);
+	int32 MaterialId = FMath::RandRange(0, Infos[MeshId].GetMaterials().Num() - 1);
+	SelectedMesh = Infos[MeshId].GetMesh();
+	SelectedMaterials = Infos[MeshId].GetMaterials();
+	if (SelectedMaterials.Num() != 0)
+	{
+		SelectedMaterial = SelectedMaterials[MaterialId];
+	}
+	SelectedAnimBP = Infos[MeshId].GetAnimBP();
 }

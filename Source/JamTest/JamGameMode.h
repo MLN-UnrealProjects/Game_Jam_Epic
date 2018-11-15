@@ -29,8 +29,7 @@ protected:
 
 	void WaitForPlayersToConnect(class UJamGameInstance * GI);
 	void GeneratePlayers(TArray<FLobbyPlayerMonsterData> &Players, class AGamePlayerController * PC);
-	void SelectModelInfosNPC();
-	void SelectModelInfosHuman();
+	void SelectModelInfos(TArray<FMatchPlayerModels>& Infos);
 	void UpdateMatchStatus(class UJamGameInstance * GI);
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
@@ -45,6 +44,7 @@ protected:
 	//TArray<class UMaterial*> MaterialsHumans;
 
 	UMaterial* SelectedMaterial;
+	TArray<UMaterial*> SelectedMaterials;
 	USkeletalMesh* SelectedMesh;
 	TSubclassOf<class UAnimInstance> SelectedAnimBP;
 public:

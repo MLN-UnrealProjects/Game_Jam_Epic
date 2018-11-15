@@ -19,6 +19,8 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
+	class USkeletalMeshComponent* JamMeshComponent = nullptr;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -28,5 +30,7 @@ public:
 
 	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category = "Health")
 	float Health = 5.0f;
-	
+
+	UFUNCTION(NetMulticast, Reliable, BlueprintCallable)
+	void SetJamSkelMesh(class USkeletalMesh* InMesh, class UMaterial* InMaterial);
 };

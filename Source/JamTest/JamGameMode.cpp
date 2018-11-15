@@ -20,6 +20,9 @@ AJamGameMode::AJamGameMode(const FObjectInitializer& ObjectIn) : AGameMode(Objec
 }
 void AJamGameMode::BeginPlay()
 {
+	ensure(MeshesHumans.Num() != 0);
+	ensure(MeshesNPC.Num() != 0);
+
 	PopulateSpawnPoints();
 	MatchStatus = EMatchStatus::MatchAboutToStart;
 	//Players = Cast<UJamGameInstance>(GetGameInstance())->GetServerPlayerList();
@@ -70,6 +73,10 @@ void AJamGameMode::Tick(float Deltatime)
 void AJamGameMode::UpdateMatchStatus(UJamGameInstance * GI)
 {
 	auto Players = Cast<UJamGameInstance>(GetGameInstance())->GetServerPlayerList();
+	if (Players.Num() == 0)
+	{
+		return;
+	}
 	bool bAllMonstersDead{ true };
 	bool bAllHumansDead{ true };
 	for (size_t i = 0; i < Players.Num(); i++)
@@ -164,8 +171,12 @@ void AJamGameMode::WaitForPlayersToConnect(UJamGameInstance * GI)
 	//	MatchStatus = EMatchStatus::MatchOngoing;
 	//	StartMatch();
 	//}
+	if (MeshesHumans.Num() == 0 || MeshesNPC.Num() == 0)
+	{
+		return;
+	}
 	auto Players = Cast<UJamGameInstance>(GetGameInstance())->GetServerPlayerList();
-
+	//todo: ora se non si parte dal menu principale non setta nulla ai jamchar perche l'array del game instance è vuoto (viene riempito solo in lobby).
 	if (NumPlayers != 0 && NumTravellingPlayers == 0)
 	{
 		for (size_t i = 0; i < GI->GetMaxConnections(); i++)
@@ -173,27 +184,86 @@ void AJamGameMode::WaitForPlayersToConnect(UJamGameInstance * GI)
 			AGamePlayerController* PC{ Cast<AGamePlayerController>(UGameplayStatics::GetPlayerController(GetWorld(),i)) };
 			if (PC)
 			{
-				bool found = false;
-				for (size_t i = 0; i < Players.Num(); i++)
-				{
-					if (Players[i].NetId == PC->PlayerState->PlayerId)
-					{
-						Players[i].SetPlayerController(PC);
-						PC->SetIsMonster(Players[i].PlayerCharacter == EPlayerType::Monster);
-						found = true;
-					}
-				}
 
-				TSubclassOf<AJamCharacter> PawnToSpawn{ PC->GetPawnClassToUse() };
-				if (PawnToSpawn)
-				{
-					AActor* SpawnActor{ GetRandomSpawnLocation() };
-					APawn* Pawn{ GetWorld()->SpawnActor<APawn>(PawnToSpawn.Get(), SpawnActor->GetTransform()) };
-					PC->Possess(Pawn);
-				}
+				GeneratePlayers(Players, PC);
 			}
 		}
 		MatchStatus = EMatchStatus::MatchOngoing;
 		StartMatch();
 	}
+}
+
+void AJamGameMode::GeneratePlayers(TArray<FLobbyPlayerMonsterData> &Players, AGamePlayerController * PC)
+{
+	bool found = false;
+
+	//check usato per debug per permettere di testare gamemode anche senza l'array del game instance
+
+	//Selection
+	if (Players.Num() != 0)
+	{
+		for (size_t i = 0; i < Players.Num(); i++)
+		{
+			if (Players[i].NetId == PC->PlayerState->PlayerId)
+			{
+				Players[i].SetPlayerController(PC);
+				PC->SetIsMonster(Players[i].PlayerCharacter == EPlayerType::Monster);
+				if (PC->IsMonster())
+				{
+					SelectModelInfosNPC();
+				}
+				else
+				{
+					SelectModelInfosHuman();
+				}
+				found = true;
+				break;
+			}
+		}
+	}
+	else
+	{
+		//Done only if Lobby Players list is empty, host is moster, all others are human
+		if (PC == Cast<AGamePlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0)))
+		{
+			SelectModelInfosNPC();
+		}
+		else
+		{
+			SelectModelInfosHuman();
+		}
+	}
+
+	//Effective spawn
+	TSubclassOf<AJamCharacter> PawnToSpawn{ PC->GetPawnClassToUse() };
+	if (PawnToSpawn)
+	{
+		AActor* SpawnActor{ GetRandomSpawnLocation() };
+
+		AJamCharacter* Pawn{ GetWorld()->SpawnActor<AJamCharacter>(PawnToSpawn.Get(), SpawnActor->GetTransform()) };
+
+		//TODO: gestire material (come saranno? tot per ogni mesh o tutti vanno bene per tutti?)
+		Pawn->SetJamSkelMesh(SelectedMesh, SelectedMaterial);
+
+		PC->Possess(Pawn);
+	}
+}
+
+void AJamGameMode::SelectModelInfosNPC()
+{
+	//SelectedMesh = MeshesNPC[FMath::RandRange(0, MeshesNPC.Num() - 1)];
+	//SelectedMaterial = MaterialsNPC[FMath::RandRange(0, MaterialsNPC.Num() - 1)];
+	int32 MeshId = FMath::RandRange(0, MeshesNPC.Num() - 1);
+	int32 MaterialId = FMath::RandRange(0, MeshesNPC[MeshId].GetMaterials().Num() - 1);
+	SelectedMesh = MeshesNPC[MeshId].GetMesh();
+	SelectedMaterial = MeshesNPC[MeshId].GetMaterials()[MaterialId];
+}
+void AJamGameMode::SelectModelInfosHuman()
+{
+	//SelectedMesh = MeshesHumans[FMath::RandRange(0, MeshesHumans.Num() - 1)];
+	//SelectedMaterial = MaterialsHumans[FMath::RandRange(0, MaterialsHumans.Num() - 1)];
+	int32 MeshId = FMath::RandRange(0, MeshesHumans.Num() - 1);
+	int32 MaterialId = FMath::RandRange(0, MeshesHumans[MeshId].GetMaterials().Num() - 1);
+	SelectedMesh = MeshesHumans[MeshId].GetMesh();
+	SelectedMaterial = MeshesHumans[MeshId].GetMaterials()[MaterialId];
 }

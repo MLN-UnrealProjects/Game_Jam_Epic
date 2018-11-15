@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "ServersList.generated.h"
 
+
 UENUM(BlueprintType)	//"BlueprintType" is essential to include 
 enum class EGameStatus : uint8
 {
@@ -60,6 +61,21 @@ struct JAMTEST_API FLobbyPlayerMonsterData
 
 	FLobbyPlayerMonsterData() {};
 	FLobbyPlayerMonsterData(int32 InPlayerNetId, EPlayerType InPlayerType);
+};
+USTRUCT(BlueprintType)
+struct JAMTEST_API FMatchPlayerModels
+{
+	GENERATED_USTRUCT_BODY()
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerData")
+		class USkeletalMesh* Mesh;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerData")
+		TArray<class UMaterial*> Materials;
+
+		USkeletalMesh* GetMesh() const { return Mesh; };
+		TArray<class UMaterial*>& GetMaterials() { return Materials; };
+
+	FMatchPlayerModels() {};
+	FMatchPlayerModels(USkeletalMesh* InMesh, TArray<class UMaterial*> InMaterials);
 };
 /**
  * 

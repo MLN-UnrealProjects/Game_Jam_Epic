@@ -132,53 +132,30 @@ void AJamGameMode::UpdateMatchStatus(UJamGameInstance * GI)
 		HumansHaveWon();
 	}
 }
+AActor * AJamGameMode::PopSpawnPoint()
+{
+	if (SpawnPoints.Num() == 0)
+	{
+		PopulateSpawnPoints();
+	}
+	if (SpawnPoints.Num() != 0)
+	{
+		return SpawnPoints.Pop();
+	}
+	return nullptr;
+}
 void AJamGameMode::WaitForPlayersToConnect(UJamGameInstance * GI)
 {
-	//while (Players.Num() != 0)
-	//{
-	//	Players.Pop();
-	//}
-
-	//if (NumPlayers != 0 && NumTravellingPlayers == 0)
-	//{
-	//	for (size_t i = 0; i < GI->GetMaxConnections(); i++)
-	//	{
-	//		AGamePlayerController* PC{ Cast<AGamePlayerController>(UGameplayStatics::GetPlayerController(GetWorld(),i)) };
-	//		if (PC)
-	//		{
-
-	//			EPlayerType Type{};
-	//			if (PC->IsMonster())
-	//			{
-	//				Type = EPlayerType::Monster;
-	//			}
-	//			else
-	//			{
-	//				Type = EPlayerType::Human;
-	//			}
-	//			FMatchPlayerData Data{ PC,Type };
-	//			Players.Push(Data);
-
-	//			TSubclassOf<AJamCharacter> PawnToSpawn{ PC->GetPawnClassToUse() };
-	//			if (PawnToSpawn)
-	//			{
-	//				AActor* SpawnActor{ GetRandomSpawnLocation() };
-	//				APawn* Pawn{ GetWorld()->SpawnActor<APawn>(PawnToSpawn.Get(), SpawnActor->GetTransform()) };
-	//				PC->Possess(Pawn);
-	//			}
-	//		}
-	//	}
-	//	MatchStatus = EMatchStatus::MatchOngoing;
-	//	StartMatch();
-	//}
 	if (MeshesHumans.Num() == 0 || MeshesNPC.Num() == 0)
 	{
 		return;
 	}
 	auto Players = Cast<UJamGameInstance>(GetGameInstance())->GetServerPlayerList();
-	//todo: ora se non si parte dal menu principale non setta nulla ai jamchar perche l'array del game instance è vuoto (viene riempito solo in lobby).
+
 	if (NumPlayers != 0 && NumTravellingPlayers == 0)
 	{
+		SpawnCitizens();
+
 		for (size_t i = 0; i < GI->GetMaxConnections(); i++)
 		{
 			AGamePlayerController* PC{ Cast<AGamePlayerController>(UGameplayStatics::GetPlayerController(GetWorld(),i)) };
@@ -187,11 +164,27 @@ void AJamGameMode::WaitForPlayersToConnect(UJamGameInstance * GI)
 				GeneratePlayers(Players, PC);
 			}
 		}
+
+
 		MatchStatus = EMatchStatus::MatchOngoing;
 		StartMatch();
 	}
 }
-
+//void AJamGameMode::SpawnCitizens()
+//{
+//	int32 CitizensToSpawn{ FMath::RandRange(MinCitizenCount,MaxCitizenCount) };
+//
+//	for (size_t i = 0; i < CitizensToSpawn; i++)
+//	{
+//		AActor* SpawnLocation{ GetCitizenSpawnPoint() };
+//		AJamCharacter* Pawn{ GetWorld()->SpawnActor<AJamCharacter>(CitizenPawn.Get(), SpawnLocation->GetTransform()) };
+//		if (Pawn)
+//		{
+//			SelectModelInfos(MeshesNPC);
+//			Pawn->SetJamSkelMesh(SelectedMesh, SelectedMaterial, SelectedAnimBP);
+//		}
+//	}
+//}
 void AJamGameMode::GeneratePlayers(TArray<FLobbyPlayerMonsterData> &Players, AGamePlayerController * PC)
 {
 	bool found = false;
@@ -244,12 +237,14 @@ void AJamGameMode::GeneratePlayers(TArray<FLobbyPlayerMonsterData> &Players, AGa
 		AJamCharacter* Pawn{ GetWorld()->SpawnActor<AJamCharacter>(PawnToSpawn.Get(), SpawnActor->GetTransform()) };
 
 		//TODO: gestire material (come saranno? tot per ogni mesh o tutti vanno bene per tutti?)
-		//TODO: spawna sbagliato
-		UE_LOG(LogTemp, Warning, TEXT("Meshes: %s spawned with %s and %s, animbp: %s"), *Pawn->GetName(), (SelectedMesh ? *SelectedMesh->GetName() : *FString{ "No Mesh" }), (SelectedMaterial ? *SelectedMaterial->GetName() : *FString{ "No Material" }), (SelectedAnimBP ? *SelectedAnimBP->GetName() : *FString{ "No animbp" }));
+		if (ensure(Pawn))
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Meshes: %s spawned with %s and %s, animbp: %s"), *Pawn->GetName(), (SelectedMesh ? *SelectedMesh->GetName() : *FString{ "No Mesh" }), (SelectedMaterial ? *SelectedMaterial->GetName() : *FString{ "No Material" }), (SelectedAnimBP ? *SelectedAnimBP->GetName() : *FString{ "No animbp" }));
 
-		Pawn->SetJamSkelMesh(SelectedMesh, SelectedMaterial, SelectedAnimBP);
+			Pawn->SetJamSkelMesh(SelectedMesh, SelectedMaterial, SelectedAnimBP);
 
-		PC->Possess(Pawn);
+			PC->Possess(Pawn);
+		}
 	}
 }
 
@@ -264,6 +259,10 @@ void AJamGameMode::SelectModelInfos(TArray<FMatchPlayerModels>& Infos)
 	if (SelectedMaterials.Num() != 0)
 	{
 		SelectedMaterial = SelectedMaterials[MaterialId];
+	}
+	else
+	{
+		SelectedMaterial = nullptr;
 	}
 	SelectedAnimBP = Infos[MeshId].GetAnimBP();
 }

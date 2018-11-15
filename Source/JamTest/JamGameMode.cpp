@@ -245,6 +245,8 @@ void AJamGameMode::GeneratePlayers(TArray<FLobbyPlayerMonsterData> &Players, AGa
 
 		//TODO: gestire material (come saranno? tot per ogni mesh o tutti vanno bene per tutti?)
 		//TODO: spawna sbagliato
+		UE_LOG(LogTemp, Warning, TEXT("Meshes: %s spawned with %s and %s, animbp: %s"), *Pawn->GetName(), (SelectedMesh ? *SelectedMesh->GetName() : *FString{ "No Mesh" }), (SelectedMaterial ? *SelectedMaterial->GetName() : *FString{ "No Material" }), (SelectedAnimBP ? *SelectedAnimBP->GetName() : *FString{ "No animbp" }));
+
 		Pawn->SetJamSkelMesh(SelectedMesh, SelectedMaterial, SelectedAnimBP);
 
 		PC->Possess(Pawn);

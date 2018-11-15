@@ -64,7 +64,7 @@ void AJamCharacter::SetJamSkelMesh_Implementation(USkeletalMesh* InMesh, UMateri
 		JamMeshComponent->SetSkeletalMesh(InMesh);
 		JamMeshComponent->SetMaterial(0, InMaterial);
 		JamMeshComponent->SetAnimInstanceClass(InAnimBP);
-		UE_LOG(LogTemp, Warning, TEXT("Meshes: %s spawned with %s and %s, animbp: %s"), *GetName(), (InMesh ? *InMesh->GetName() : *FString{ "No Mesh" }), (InMaterial ? *InMaterial->GetName() : *FString{ "No Material" }),*InAnimBP->GetName());
+		UE_LOG(LogTemp, Warning, TEXT("Meshes: %s spawned with %s and %s, animbp: %s"), *GetName(), (InMesh ? *InMesh->GetName() : *FString{ "No Mesh" }), (InMaterial ? *InMaterial->GetName() : *FString{ "No Material" }), (InAnimBP ? *InAnimBP->GetName() : *FString{ "No animbp" }));
 	}
 }
 void AJamCharacter::SetJamSkelMeshes_Implementation(USkeletalMesh* InMesh, const TArray<UMaterial*>& InMaterials, TSubclassOf<UAnimInstance> InAnimBP)
@@ -77,6 +77,6 @@ void AJamCharacter::SetJamSkelMeshes_Implementation(USkeletalMesh* InMesh, const
 			JamMeshComponent->SetMaterial(i, InMaterials[i]);
 		}
 		JamMeshComponent->SetAnimInstanceClass(InAnimBP);
-		UE_LOG(LogTemp, Warning, TEXT("Meshes: %s spawned with %s and %i materials, animbp: %s"), *GetName(), (InMesh ? *InMesh->GetName() : *FString{ "No Mesh" }), InMaterials.Num(), *InAnimBP->GetName());
+		UE_LOG(LogTemp, Warning, TEXT("Meshes: %s spawned with %s and %i materials, animbp: %s"), *GetName(), (InMesh ? *InMesh->GetName() : *FString{ "No Mesh" }), InMaterials.Num(), (InAnimBP ? *InAnimBP->GetName() : *FString{"No animbp"}));
 	}
 }

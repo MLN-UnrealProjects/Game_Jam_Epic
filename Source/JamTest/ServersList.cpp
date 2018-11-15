@@ -3,9 +3,10 @@
 #include "ServersList.h"
 #include "Runtime/Engine/Classes/Components/SkeletalMeshComponent.h"
 #include "Runtime/Engine/Classes/Materials/Material.h"
-
-FMatchPlayerModels::FMatchPlayerModels(USkeletalMesh* InMesh, TArray<class UMaterial*> InMaterials)
+#include "Runtime/Engine/Classes/Animation/AnimInstance.h"
+FMatchPlayerModels::FMatchPlayerModels(USkeletalMesh* InMesh, TArray<class UMaterial*> InMaterials, TSubclassOf<UAnimInstance> InAnimBP)
 {
 	Mesh = InMesh;
 	Materials = InMaterials;
+	AnimBP = InAnimBP;
 }

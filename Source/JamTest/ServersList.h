@@ -68,14 +68,18 @@ struct JAMTEST_API FMatchPlayerModels
 	GENERATED_USTRUCT_BODY()
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerData")
 		class USkeletalMesh* Mesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerData")
+		TSubclassOf<class UAnimInstance> AnimBP;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PlayerData")
 		TArray<class UMaterial*> Materials;
 
-		USkeletalMesh* GetMesh() const { return Mesh; };
+	USkeletalMesh* GetMesh() const { return Mesh; };
+	TSubclassOf<UAnimInstance> GetAnimBP() const { return AnimBP; };
 		TArray<class UMaterial*>& GetMaterials() { return Materials; };
 
 	FMatchPlayerModels() {};
-	FMatchPlayerModels(USkeletalMesh* InMesh, TArray<class UMaterial*> InMaterials);
+	FMatchPlayerModels(USkeletalMesh* InMesh, TArray<class UMaterial*> InMaterials, TSubclassOf<UAnimInstance> InAnimBP);
 };
 /**
  * 

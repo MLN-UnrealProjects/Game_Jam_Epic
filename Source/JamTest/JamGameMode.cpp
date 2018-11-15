@@ -243,7 +243,8 @@ void AJamGameMode::GeneratePlayers(TArray<FLobbyPlayerMonsterData> &Players, AGa
 		AJamCharacter* Pawn{ GetWorld()->SpawnActor<AJamCharacter>(PawnToSpawn.Get(), SpawnActor->GetTransform()) };
 
 		//TODO: gestire material (come saranno? tot per ogni mesh o tutti vanno bene per tutti?)
-		Pawn->SetJamSkelMesh(SelectedMesh, SelectedMaterial);
+		//TODO: spawna sbagliato
+		Pawn->SetJamSkelMesh(SelectedMesh, SelectedMaterial, SelectedAnimBP);
 
 		PC->Possess(Pawn);
 	}
@@ -257,6 +258,7 @@ void AJamGameMode::SelectModelInfosNPC()
 	int32 MaterialId = FMath::RandRange(0, MeshesNPC[MeshId].GetMaterials().Num() - 1);
 	SelectedMesh = MeshesNPC[MeshId].GetMesh();
 	SelectedMaterial = MeshesNPC[MeshId].GetMaterials()[MaterialId];
+	SelectedAnimBP = MeshesNPC[MeshId].GetAnimBP();
 }
 void AJamGameMode::SelectModelInfosHuman()
 {
@@ -266,4 +268,5 @@ void AJamGameMode::SelectModelInfosHuman()
 	int32 MaterialId = FMath::RandRange(0, MeshesHumans[MeshId].GetMaterials().Num() - 1);
 	SelectedMesh = MeshesHumans[MeshId].GetMesh();
 	SelectedMaterial = MeshesHumans[MeshId].GetMaterials()[MaterialId];
+	SelectedAnimBP = MeshesNPC[MeshId].GetAnimBP();
 }

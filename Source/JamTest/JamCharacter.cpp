@@ -6,6 +6,8 @@
 #include "Runtime/Engine/Classes/Components/SkeletalMeshComponent.h"
 #include "Runtime/Engine/Classes/Materials/Material.h"
 #include "Runtime/Engine/Classes/Components/CapsuleComponent.h"
+#include "Runtime/Engine/Classes/Animation/AnimInstance.h"
+
 AJamCharacter::AJamCharacter(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer/*.DoNotCreateDefaultSubobject(MeshComponentName)*/.SetDefaultSubobjectClass<UJamMovementComponent>(ACharacter::CharacterMovementComponentName))
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -55,12 +57,26 @@ void AJamCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
-void AJamCharacter::SetJamSkelMesh_Implementation(USkeletalMesh* InMesh, UMaterial* InMaterial)
+void AJamCharacter::SetJamSkelMesh_Implementation(USkeletalMesh* InMesh, UMaterial* InMaterial, TSubclassOf<UAnimInstance> InAnimBP)
 {
 	if (JamMeshComponent)
 	{
 		JamMeshComponent->SetSkeletalMesh(InMesh);
 		JamMeshComponent->SetMaterial(0, InMaterial);
-		UE_LOG(LogTemp, Warning, TEXT("Meshes: %s spawned with %s and %s"), *GetName(), (InMesh ? *InMesh->GetName() : *FString{ "No Mesh" }), (InMaterial ? *InMaterial->GetName() : *FString{ "No Material" }))
+		JamMeshComponent->SetAnimInstanceClass(InAnimBP);
+		UE_LOG(LogTemp, Warning, TEXT("Meshes: %s spawned with %s and %s, animbp: %s"), *GetName(), (InMesh ? *InMesh->GetName() : *FString{ "No Mesh" }), (InMaterial ? *InMaterial->GetName() : *FString{ "No Material" }),*InAnimBP->GetName());
+	}
+}
+void AJamCharacter::SetJamSkelMeshes_Implementation(USkeletalMesh* InMesh, const TArray<UMaterial*>& InMaterials, TSubclassOf<UAnimInstance> InAnimBP)
+{
+	if (JamMeshComponent)
+	{
+		JamMeshComponent->SetSkeletalMesh(InMesh);
+		for (size_t i = 0; i < InMaterials.Num(); i++)
+		{
+			JamMeshComponent->SetMaterial(i, InMaterials[i]);
+		}
+		JamMeshComponent->SetAnimInstanceClass(InAnimBP);
+		UE_LOG(LogTemp, Warning, TEXT("Meshes: %s spawned with %s and %i materials, animbp: %s"), *GetName(), (InMesh ? *InMesh->GetName() : *FString{ "No Mesh" }), InMaterials.Num(), *InAnimBP->GetName());
 	}
 }

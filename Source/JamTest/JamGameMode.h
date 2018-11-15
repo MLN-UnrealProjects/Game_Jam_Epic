@@ -46,6 +46,7 @@ protected:
 
 	UMaterial* SelectedMaterial;
 	USkeletalMesh* SelectedMesh;
+	TSubclassOf<class UAnimInstance> SelectedAnimBP;
 public:
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	USkeletalMesh* GetSelectedMesh() const { return SelectedMesh; };

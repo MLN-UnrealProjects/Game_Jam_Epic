@@ -32,5 +32,7 @@ public:
 	float Health = 5.0f;
 
 	UFUNCTION(NetMulticast, Reliable, BlueprintCallable)
-	void SetJamSkelMesh(class USkeletalMesh* InMesh, class UMaterial* InMaterial);
+	void SetJamSkelMesh(class USkeletalMesh* InMesh, class UMaterial* InMaterial, TSubclassOf<class UAnimInstance> AnimBP);
+	UFUNCTION(NetMulticast, Reliable, BlueprintCallable)
+		void SetJamSkelMeshes(class USkeletalMesh* InMesh, const TArray<class UMaterial*>& InMaterials, TSubclassOf<class UAnimInstance> AnimBP);
 };

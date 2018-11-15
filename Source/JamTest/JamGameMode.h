@@ -25,7 +25,10 @@ protected:
 	virtual void BeginPlay() override;
 	EMatchStatus MatchStatus = EMatchStatus::Unknown;
 	AActor* GetRandomSpawnLocation();
+	UPROPERTY(BlueprintReadOnly)
 	TArray<AActor*> SpawnPoints;
+	UFUNCTION(BlueprintCallable)
+		AActor* PopSpawnPoint();
 
 	void WaitForPlayersToConnect(class UJamGameInstance * GI);
 	void GeneratePlayers(TArray<FLobbyPlayerMonsterData> &Players, class AGamePlayerController * PC);

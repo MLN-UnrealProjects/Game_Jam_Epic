@@ -132,6 +132,18 @@ void AJamGameMode::UpdateMatchStatus(UJamGameInstance * GI)
 		HumansHaveWon();
 	}
 }
+AActor * AJamGameMode::PopSpawnPoint()
+{
+	if (SpawnPoints.Num() == 0)
+	{
+		PopulateSpawnPoints();
+	}
+	if (SpawnPoints.Num() != 0)
+	{
+		return SpawnPoints.Pop();
+	}
+	return nullptr;
+}
 void AJamGameMode::WaitForPlayersToConnect(UJamGameInstance * GI)
 {
 	if (MeshesHumans.Num() == 0 || MeshesNPC.Num() == 0)

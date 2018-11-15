@@ -29,14 +29,23 @@ protected:
 
 	void WaitForPlayersToConnect(class UJamGameInstance * GI);
 	void GeneratePlayers(TArray<FLobbyPlayerMonsterData> &Players, class AGamePlayerController * PC);
-	void SelectModelInfos(TArray<FMatchPlayerModels>& Infos);
 	void UpdateMatchStatus(class UJamGameInstance * GI);
+	UFUNCTION(BlueprintImplementableEvent)
+	void SpawnCitizens();
 
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 		TArray<FMatchPlayerModels> MeshesNPC;
 		//TArray<USkeletalMesh*> MeshesNPC;
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 		TArray<FMatchPlayerModels> MeshesHumans;
+
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+		TSubclassOf<class AJamCharacter> CitizenPawn;
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+		int32 MinCitizenCount = 30;
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+		int32 MaxCitizenCount = 100;
+
 	//TArray<USkeletalMesh*> MeshesHumans;
 	//UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	//TArray<class UMaterial*> MaterialsNPC;
@@ -47,7 +56,12 @@ protected:
 	TArray<UMaterial*> SelectedMaterials;
 	USkeletalMesh* SelectedMesh;
 	TSubclassOf<class UAnimInstance> SelectedAnimBP;
+
 public:
+	UFUNCTION(BlueprintCallable)
+	void SelectModelInfos(TArray<FMatchPlayerModels>& Infos);
+	UFUNCTION(BlueprintCallable)
+		void SelectModelInfosNPC() { SelectModelInfos(MeshesNPC); };
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	USkeletalMesh* GetSelectedMesh() const { return SelectedMesh; };
 	UFUNCTION(BlueprintCallable, BlueprintPure)

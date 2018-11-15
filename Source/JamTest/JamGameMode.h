@@ -27,8 +27,10 @@ protected:
 	AActor* GetRandomSpawnLocation();
 	UPROPERTY(BlueprintReadOnly)
 	TArray<AActor*> SpawnPoints;
+public:
 	UFUNCTION(BlueprintCallable)
 		AActor* PopSpawnPoint();
+protected:
 
 	void WaitForPlayersToConnect(class UJamGameInstance * GI);
 	void GeneratePlayers(TArray<FLobbyPlayerMonsterData> &Players, class AGamePlayerController * PC);
@@ -67,6 +69,8 @@ public:
 		void SelectModelInfosNPC() { SelectModelInfos(MeshesNPC); };
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	USkeletalMesh* GetSelectedMesh() const { return SelectedMesh; };
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+		TSubclassOf<class UAnimInstance> GetSelectedAnimBP() const { return SelectedAnimBP; };
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 		UMaterial* GetSelectedMaterial() const { return SelectedMaterial; };
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Match")

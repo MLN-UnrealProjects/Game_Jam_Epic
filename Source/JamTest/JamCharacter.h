@@ -31,6 +31,8 @@ public:
 	UPROPERTY(BlueprintReadWrite,EditAnywhere,Category = "Health")
 	float Health = 5.0f;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Health")
+		float MaxHealth = 10.0f;
 	UFUNCTION(NetMulticast, Reliable, BlueprintCallable)
 	void SetJamSkelMesh(class USkeletalMesh* InMesh, class UMaterial* InMaterial, TSubclassOf<class UAnimInstance> AnimBP);
 	UFUNCTION(NetMulticast, Reliable, BlueprintCallable)
